@@ -1,0 +1,1174 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - JobShield{% endblock %}
+
+{% block content %}
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+<style>
+
+    .admin-dashboard {
+        padding-bottom: 40px;
+    }
+
+
+    /* HEADER */
+
+    .admin-header {
+        background: linear-gradient(135deg, #111827, #1f2937);
+        color: white;
+        border-radius: 18px;
+        padding: 30px;
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+    }
+
+
+    .admin-header::after {
+        content: "";
+        position: absolute;
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        border: 25px solid rgba(255,255,255,0.05);
+        right: -45px;
+        top: -80px;
+    }
+
+
+    .header-icon {
+        width: 62px;
+        height: 62px;
+        border-radius: 15px;
+        background: rgba(255,255,255,0.10);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+
+    .header-icon i {
+        font-size: 30px;
+    }
+
+
+    .admin-header h2,
+    .admin-header p,
+    .admin-badge {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    /* LOGOUT BUTTON */
+
+    .admin-logout-btn {
+        position: relative;
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-left: 10px;
+        padding: 10px 17px;
+        border-radius: 10px;
+        background: rgba(220, 38, 38, 0.95);
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.25s ease;
+    }
+
+
+    .admin-logout-btn:hover {
+        background: #b91c1c;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+
+    /* SECTION TITLES */
+
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+
+    .section-title i {
+        margin-right: 8px;
+    }
+
+
+    /* STAT CARDS */
+
+    .stat-card {
+        border: 0;
+        border-radius: 17px;
+        transition: 0.25s ease;
+        overflow: hidden;
+    }
+
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.10) !important;
+    }
+
+
+    .stat-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+
+    .stat-icon i {
+        font-size: 29px;
+    }
+
+
+    .stat-number {
+        font-size: 31px;
+    }
+
+
+    /* MANAGEMENT CARDS */
+
+    .management-card {
+        border: 0;
+        border-radius: 18px;
+        transition: 0.25s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+
+    .management-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.10) !important;
+    }
+
+
+    .management-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+    }
+
+
+    .management-icon i {
+        font-size: 31px;
+    }
+
+
+    .management-decoration {
+        position: absolute;
+        right: -20px;
+        bottom: -30px;
+        font-size: 115px;
+        opacity: 0.035;
+    }
+
+
+    /* QUICK ADMIN */
+
+    .overview-card {
+        border: 0;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+
+    .overview-header-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+
+    .overview-header-icon i {
+        font-size: 23px;
+    }
+
+
+    .overview-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 17px 0;
+        border-bottom: 1px solid #eeeeee;
+    }
+
+
+    .overview-item:last-child {
+        border-bottom: none;
+    }
+
+
+    .overview-icon {
+        width: 47px;
+        height: 47px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+
+    .overview-icon i {
+        font-size: 20px;
+    }
+
+
+    /* SYSTEM STATUS */
+
+    .system-icon {
+        width: 95px;
+        height: 95px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+    }
+
+
+    .system-icon i {
+        font-size: 48px;
+    }
+
+
+    .status-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+    }
+
+
+    /* SECURITY */
+
+    .security-card {
+        border: 0;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+
+    .security-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+
+    .security-icon i {
+        font-size: 29px;
+    }
+
+
+    /* BUTTONS */
+
+    .admin-btn {
+        border-radius: 10px;
+        padding: 9px 16px;
+        font-weight: 500;
+    }
+
+</style>
+
+
+<div class="container-fluid py-4 admin-dashboard">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="admin-header">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="header-icon">
+
+                    <i class="bi bi-speedometer2"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h2 class="fw-bold mb-1">
+
+                        Admin Dashboard
+
+                    </h2>
+
+                    <p class="mb-0 opacity-75">
+
+                        Monitor JobShield activity and manage the platform.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-badge d-flex align-items-center">
+
+                <span class="badge bg-white text-dark px-4 py-3 fs-6">
+
+                    <i class="bi bi-shield-lock-fill me-1"></i>
+
+                    Administrator
+
+                </span>
+
+
+                <!-- LOGOUT BUTTON -->
+
+                <a href="{{ url_for('logout') }}"
+                   class="admin-logout-btn"
+                   onclick="return confirm('Are you sure you want to logout?');">
+
+                    <i class="bi bi-box-arrow-right"></i>
+
+                    Logout
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PLATFORM OVERVIEW -->
+    <!-- ================================================= -->
+
+    <h5 class="section-title">
+
+        <i class="bi bi-bar-chart-fill"></i>
+
+        Platform Overview
+
+    </h5>
+
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- USERS -->
+
+        <div class="col-md-6 col-xl-4">
+
+            <div class="card stat-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <p class="text-muted mb-2">
+
+                                Total Users
+
+                            </p>
+
+                            <h2 class="fw-bold stat-number mb-0">
+
+                                {{ total_users }}
+
+                            </h2>
+
+                        </div>
+
+
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+
+                            <i class="bi bi-people-fill"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-4">
+
+                        <a href="{{ url_for('admin_users') }}"
+                           class="text-decoration-none fw-semibold">
+
+                            <i class="bi bi-person-lines-fill me-1"></i>
+
+                            Manage Users
+
+                            <i class="bi bi-arrow-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- JOBS -->
+
+        <div class="col-md-6 col-xl-4">
+
+            <div class="card stat-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <p class="text-muted mb-2">
+
+                                Verified Jobs
+
+                            </p>
+
+                            <h2 class="fw-bold stat-number mb-0">
+
+                                {{ total_jobs }}
+
+                            </h2>
+
+                        </div>
+
+
+                        <div class="stat-icon bg-success bg-opacity-10 text-success">
+
+                            <i class="bi bi-briefcase-fill"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-4">
+
+                        <a href="{{ url_for('admin_jobs') }}"
+                           class="text-decoration-none fw-semibold">
+
+                            <i class="bi bi-search me-1"></i>
+
+                            View Jobs
+
+                            <i class="bi bi-arrow-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REPORTS -->
+
+        <div class="col-md-6 col-xl-4">
+
+            <div class="card stat-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <p class="text-muted mb-2">
+
+                                Job Reports
+
+                            </p>
+
+                            <h2 class="fw-bold stat-number mb-0">
+
+                                {{ total_reports }}
+
+                            </h2>
+
+                        </div>
+
+
+                        <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+
+                            <i class="bi bi-flag-fill"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-4">
+
+                        <a href="{{ url_for('admin_reports') }}"
+                           class="text-decoration-none fw-semibold">
+
+                            <i class="bi bi-clipboard-check me-1"></i>
+
+                            Review Reports
+
+                            <i class="bi bi-arrow-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- ADMINISTRATION -->
+    <!-- ================================================= -->
+
+    <h5 class="section-title mt-4">
+
+        <i class="bi bi-grid-1x2-fill"></i>
+
+        Administration
+
+    </h5>
+
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- USER MANAGEMENT -->
+
+        <div class="col-lg-4">
+
+            <div class="card management-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="management-icon bg-primary bg-opacity-10 text-primary">
+
+                        <i class="bi bi-person-gear"></i>
+
+                    </div>
+
+
+                    <h5 class="fw-bold">
+
+                        User Management
+
+                    </h5>
+
+
+                    <p class="text-muted">
+
+                        View registered users and their account roles.
+
+                    </p>
+
+
+                    <a href="{{ url_for('admin_users') }}"
+                       class="btn btn-outline-primary admin-btn mt-2">
+
+                        <i class="bi bi-people-fill me-1"></i>
+
+                        Manage Users
+
+                        <i class="bi bi-arrow-right ms-1"></i>
+
+                    </a>
+
+
+                    <i class="bi bi-people management-decoration"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- JOB VERIFICATION -->
+
+        <div class="col-lg-4">
+
+            <div class="card management-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="management-icon bg-success bg-opacity-10 text-success">
+
+                        <i class="bi bi-shield-check"></i>
+
+                    </div>
+
+
+                    <h5 class="fw-bold">
+
+                        Job Verification
+
+                    </h5>
+
+
+                    <p class="text-muted">
+
+                        Review jobs submitted for verification and inspect
+                        their risk scores and statuses.
+
+                    </p>
+
+
+                    <a href="{{ url_for('admin_jobs') }}"
+                       class="btn btn-outline-success admin-btn mt-2">
+
+                        <i class="bi bi-briefcase-fill me-1"></i>
+
+                        View Jobs
+
+                        <i class="bi bi-arrow-right ms-1"></i>
+
+                    </a>
+
+
+                    <i class="bi bi-shield-check management-decoration"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REPORT MANAGEMENT -->
+
+        <div class="col-lg-4">
+
+            <div class="card management-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="management-icon bg-danger bg-opacity-10 text-danger">
+
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    </div>
+
+
+                    <h5 class="fw-bold">
+
+                        Report Management
+
+                    </h5>
+
+
+                    <p class="text-muted">
+
+                        Review reports submitted by users about suspicious
+                        or potentially fraudulent jobs.
+
+                    </p>
+
+
+                    <a href="{{ url_for('admin_reports') }}"
+                       class="btn btn-outline-danger admin-btn mt-2">
+
+                        <i class="bi bi-flag-fill me-1"></i>
+
+                        Review Reports
+
+                        <i class="bi bi-arrow-right ms-1"></i>
+
+                    </a>
+
+
+                    <i class="bi bi-flag management-decoration"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- QUICK ADMINISTRATION + SYSTEM STATUS -->
+    <!-- ================================================= -->
+
+    <div class="row g-4">
+
+
+        <!-- QUICK ADMINISTRATION -->
+
+        <div class="col-lg-7">
+
+            <div class="card overview-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-2">
+
+                        <div class="overview-header-icon
+                                    bg-primary bg-opacity-10 text-primary me-3">
+
+                            <i class="bi bi-lightning-charge-fill"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h5 class="fw-bold mb-0">
+
+                                Quick Administration
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                Access important platform controls
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- USER -->
+
+                    <div class="overview-item">
+
+                        <div class="overview-icon
+                                    bg-primary bg-opacity-10 text-primary">
+
+                            <i class="bi bi-people-fill"></i>
+
+                        </div>
+
+
+                        <div class="flex-grow-1">
+
+                            <strong>
+
+                                Manage Users
+
+                            </strong>
+
+                            <div class="small text-muted">
+
+                                View registered accounts and roles.
+
+                            </div>
+
+                        </div>
+
+
+                        <a href="{{ url_for('admin_users') }}"
+                           class="btn btn-sm btn-outline-primary">
+
+                            Open
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- JOBS -->
+
+                    <div class="overview-item">
+
+                        <div class="overview-icon
+                                    bg-success bg-opacity-10 text-success">
+
+                            <i class="bi bi-briefcase-fill"></i>
+
+                        </div>
+
+
+                        <div class="flex-grow-1">
+
+                            <strong>
+
+                                Review Jobs
+
+                            </strong>
+
+                            <div class="small text-muted">
+
+                                Inspect submitted jobs and verification results.
+
+                            </div>
+
+                        </div>
+
+
+                        <a href="{{ url_for('admin_jobs') }}"
+                           class="btn btn-sm btn-outline-success">
+
+                            Open
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- REPORTS -->
+
+                    <div class="overview-item">
+
+                        <div class="overview-icon
+                                    bg-danger bg-opacity-10 text-danger">
+
+                            <i class="bi bi-flag-fill"></i>
+
+                        </div>
+
+
+                        <div class="flex-grow-1">
+
+                            <strong>
+
+                                Review Reports
+
+                            </strong>
+
+                            <div class="small text-muted">
+
+                                Check reports submitted by JobShield users.
+
+                            </div>
+
+                        </div>
+
+
+                        <a href="{{ url_for('admin_reports') }}"
+                           class="btn btn-sm btn-outline-danger">
+
+                            Open
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- MONITORING -->
+
+                    <div class="overview-item">
+
+                        <div class="overview-icon
+                                    bg-warning bg-opacity-10 text-warning">
+
+                            <i class="bi bi-shield-exclamation"></i>
+
+                        </div>
+
+
+                        <div class="flex-grow-1">
+
+                            <strong>
+
+                                Platform Monitoring
+
+                            </strong>
+
+                            <div class="small text-muted">
+
+                                Monitor suspicious activity and reports.
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="badge bg-warning text-dark">
+
+                            Active
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SYSTEM STATUS -->
+
+        <div class="col-lg-5">
+
+            <div class="card overview-card shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-3">
+
+                        <div class="overview-header-icon
+                                    bg-success bg-opacity-10 text-success me-3">
+
+                            <i class="bi bi-activity"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h5 class="fw-bold mb-0">
+
+                                System Status
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                JobShield administration status
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="text-center py-3">
+
+                        <div class="system-icon
+                                    bg-success bg-opacity-10 text-success">
+
+                            <i class="bi bi-shield-check"></i>
+
+                        </div>
+
+
+                        <h5 class="fw-bold mt-3">
+
+                            System Active
+
+                        </h5>
+
+
+                        <p class="text-muted">
+
+                            JobShield administration services are available.
+
+                        </p>
+
+                    </div>
+
+
+                    <hr>
+
+
+                    <!-- AUTHENTICATION -->
+
+                    <div class="status-row">
+
+                        <span class="text-muted">
+
+                            <i class="bi bi-check-circle-fill
+                                      text-success me-2"></i>
+
+                            Authentication
+
+                        </span>
+
+
+                        <span class="badge bg-success">
+
+                            Active
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- DATABASE -->
+
+                    <div class="status-row">
+
+                        <span class="text-muted">
+
+                            <i class="bi bi-database-check
+                                      text-success me-2"></i>
+
+                            Database
+
+                        </span>
+
+
+                        <span class="badge bg-success">
+
+                            Connected
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- ENGINE -->
+
+                    <div class="status-row">
+
+                        <span class="text-muted">
+
+                            <i class="bi bi-cpu-fill
+                                      text-success me-2"></i>
+
+                            Verification Engine
+
+                        </span>
+
+
+                        <span class="badge bg-success">
+
+                            Active
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- SECURITY INFORMATION -->
+    <!-- ================================================= -->
+
+    <div class="card security-card shadow-sm mt-4">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-start">
+
+                <div class="security-icon
+                            bg-dark bg-opacity-10 me-3">
+
+                    <i class="bi bi-shield-lock-fill"></i>
+
+                </div>
+
+
+                <div class="flex-grow-1">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <h5 class="fw-bold mb-1">
+
+                            JobShield Security Administration
+
+                        </h5>
+
+                        <i class="bi bi-lock-fill text-muted fs-5"></i>
+
+                    </div>
+
+
+                    <p class="text-muted mb-0">
+
+                        Use the administration panel to monitor users,
+                        verified jobs, and submitted reports. Admin access
+                        is restricted to authorized administrator accounts.
+
+                    </p>
+
+
+                    <div class="d-flex flex-wrap gap-4 mt-3">
+
+                        <span class="small text-muted">
+
+                            <i class="bi bi-check-circle-fill
+                                      text-success me-1"></i>
+
+                            Authorized Access
+
+                        </span>
+
+
+                        <span class="small text-muted">
+
+                            <i class="bi bi-database-lock
+                                      text-primary me-1"></i>
+
+                            Protected Data
+
+                        </span>
+
+
+                        <span class="small text-muted">
+
+                            <i class="bi bi-shield-check
+                                      text-success me-1"></i>
+
+                            Secure Verification
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

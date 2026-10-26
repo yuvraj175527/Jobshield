@@ -1,0 +1,11 @@
+Flask
+mysql-connector-python
+Flask-Bcrypt
+python-dotenv
+google-genai
+requests
+beautifulsoup4
+scikit-learn
+pandas
+numpy
+joblib

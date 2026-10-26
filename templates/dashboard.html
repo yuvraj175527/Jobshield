@@ -1,0 +1,637 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - JobShield{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-page">
+
+    <!-- =====================================================
+         NAVBAR
+         ===================================================== -->
+
+    <nav class="dashboard-navbar">
+
+        <div class="dashboard-navbar-inner">
+
+            <!-- BRAND -->
+            <a href="{{ url_for('dashboard') }}" class="dashboard-brand">
+
+                <div class="dashboard-logo-wrap">
+                    <img
+                        src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                        alt="JobShield"
+                        class="dashboard-logo"
+                    >
+                </div>
+
+                <div class="dashboard-brand-info">
+
+                    <div class="dashboard-brand-name">
+                        Job<span>Shield</span>
+                    </div>
+
+                    <div class="dashboard-tagline">
+                        SAFE JOBS. BRIGHTER FUTURES.
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- NAVIGATION -->
+            <div class="dashboard-nav">
+
+                <a href="{{ url_for('dashboard') }}"
+                   class="dashboard-nav-item active">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+
+                </a>
+
+                <a href="{{ url_for('verify_job') }}"
+                   class="dashboard-nav-item">
+
+                    <i class="bi bi-shield-check"></i>
+                    <span>Verify Job</span>
+
+                </a>
+
+                <a href="{{ url_for('verification_history') }}"
+                   class="dashboard-nav-item">
+
+                    <i class="bi bi-clock-history"></i>
+                    <span>History</span>
+
+                </a>
+
+                <a href="{{ url_for('report_job') }}"
+                   class="dashboard-nav-item">
+
+                    <i class="bi bi-flag-fill"></i>
+                    <span>Report</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- PROFILE -->
+            <div class="dashboard-profile-area">
+
+                <div class="dashboard-profile">
+
+                    <div class="dashboard-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="dashboard-profile-text">
+
+                        <span class="dashboard-profile-label">
+                            SIGNED IN AS
+                        </span>
+
+                        <span class="dashboard-user-name">
+                            {{ session.get('user_name', 'User') }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('logout') }}"
+                   class="dashboard-logout">
+
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Logout</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="dashboard-main">
+
+
+        <!-- =================================================
+             WELCOME
+             ================================================= -->
+
+        <section class="dashboard-welcome">
+
+            <div class="dashboard-welcome-left">
+
+                <div class="dashboard-eyebrow">
+                    <span class="dashboard-eyebrow-dot"></span>
+                    PERSONAL DASHBOARD
+                </div>
+
+                <h1>
+                    Welcome back,
+                    <span>{{ session.get('user_name', 'User') }}</span>
+                </h1>
+
+                <p>
+                    Verify job opportunities, review your verification
+                    history and report suspicious recruitment activity.
+                </p>
+
+            </div>
+
+
+            <div class="dashboard-welcome-shield">
+
+                <div class="dashboard-shield-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+
+                <div>
+                    <strong>JobShield Protection</strong>
+                    <span>Your job safety tools are ready.</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             STATISTICS
+             ================================================= -->
+
+        <section class="dashboard-stats">
+
+
+            <!-- VERIFIED JOBS -->
+
+            <div class="dashboard-stat-card">
+
+                <div class="dashboard-stat-icon blue">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+
+                <div class="dashboard-stat-content">
+
+                    <span class="dashboard-stat-label">
+                        JOBS CHECKED
+                    </span>
+
+                    <strong>
+                        {{ total_jobs or 0 }}
+                    </strong>
+
+                    <small>
+                        Opportunities submitted
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- VERIFICATIONS -->
+
+            <div class="dashboard-stat-card">
+
+                <div class="dashboard-stat-icon green">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+
+                <div class="dashboard-stat-content">
+
+                    <span class="dashboard-stat-label">
+                        VERIFICATIONS
+                    </span>
+
+                    <strong>
+                        {{ total_verifications or 0 }}
+                    </strong>
+
+                    <small>
+                        Analysis completed
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROTECTION -->
+
+            <div class="dashboard-stat-card">
+
+                <div class="dashboard-stat-icon purple">
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+
+                <div class="dashboard-stat-content">
+
+                    <span class="dashboard-stat-label">
+                        PROTECTION
+                    </span>
+
+                    <strong>
+                        Active
+                    </strong>
+
+                    <small>
+                        JobShield tools available
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACCOUNT -->
+
+            <div class="dashboard-stat-card">
+
+                <div class="dashboard-stat-icon orange">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+
+                <div class="dashboard-stat-content">
+
+                    <span class="dashboard-stat-label">
+                        ACCOUNT
+                    </span>
+
+                    <strong>
+                        Secure
+                    </strong>
+
+                    <small>
+                        Personal dashboard
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MAIN ACTIONS
+             ================================================= -->
+
+        <section class="dashboard-section">
+
+            <div class="dashboard-section-heading">
+
+                <div>
+
+                    <span class="dashboard-section-label">
+                        JOBSHIELD TOOLS
+                    </span>
+
+                    <h2>
+                        What would you like to do?
+                    </h2>
+
+                    <p>
+                        Choose an action to continue.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-actions">
+
+
+                <!-- VERIFY -->
+
+                <a href="{{ url_for('verify_job') }}"
+                   class="dashboard-action-card primary">
+
+                    <div class="dashboard-action-top">
+
+                        <div class="dashboard-action-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                        <i class="bi bi-arrow-up-right dashboard-action-arrow"></i>
+
+                    </div>
+
+                    <div class="dashboard-action-content">
+
+                        <span class="dashboard-action-label">
+                            VERIFICATION
+                        </span>
+
+                        <h3>
+                            Verify a Job
+                        </h3>
+
+                        <p>
+                            Check a job opportunity for suspicious
+                            recruitment patterns and potential scam indicators.
+                        </p>
+
+                    </div>
+
+                    <div class="dashboard-action-link">
+                        Start Verification
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+
+                </a>
+
+
+                <!-- HISTORY -->
+
+                <a href="{{ url_for('verification_history') }}"
+                   class="dashboard-action-card">
+
+                    <div class="dashboard-action-top">
+
+                        <div class="dashboard-action-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+
+                        <i class="bi bi-arrow-up-right dashboard-action-arrow"></i>
+
+                    </div>
+
+                    <div class="dashboard-action-content">
+
+                        <span class="dashboard-action-label">
+                            ACTIVITY
+                        </span>
+
+                        <h3>
+                            Verification History
+                        </h3>
+
+                        <p>
+                            Review jobs you have previously checked
+                            and their verification results.
+                        </p>
+
+                    </div>
+
+                    <div class="dashboard-action-link">
+                        View History
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+
+                </a>
+
+
+                <!-- REPORT -->
+
+                <a href="{{ url_for('report_job') }}"
+                   class="dashboard-action-card">
+
+                    <div class="dashboard-action-top">
+
+                        <div class="dashboard-action-icon">
+                            <i class="bi bi-flag-fill"></i>
+                        </div>
+
+                        <i class="bi bi-arrow-up-right dashboard-action-arrow"></i>
+
+                    </div>
+
+                    <div class="dashboard-action-content">
+
+                        <span class="dashboard-action-label">
+                            SAFETY
+                        </span>
+
+                        <h3>
+                            Report a Job
+                        </h3>
+
+                        <p>
+                            Submit details about a suspicious
+                            or potentially fraudulent job.
+                        </p>
+
+                    </div>
+
+                    <div class="dashboard-action-link">
+                        Submit Report
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             HOW IT WORKS
+             ================================================= -->
+
+        <section class="dashboard-process-section">
+
+            <div class="dashboard-section-heading">
+
+                <div>
+
+                    <span class="dashboard-section-label">
+                        SIMPLE PROCESS
+                    </span>
+
+                    <h2>
+                        How JobShield works
+                    </h2>
+
+                    <p>
+                        Check a job in three simple steps.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-process">
+
+
+                <!-- STEP 1 -->
+
+                <div class="dashboard-process-card">
+
+                    <div class="dashboard-step-number">
+                        01
+                    </div>
+
+                    <div class="dashboard-process-icon">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+
+                    <h3>
+                        Enter Details
+                    </h3>
+
+                    <p>
+                        Submit the company, job title, recruiter,
+                        salary, URL and description.
+                    </p>
+
+                    <div class="dashboard-process-arrow">
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+
+                <div class="dashboard-process-card">
+
+                    <div class="dashboard-step-number">
+                        02
+                    </div>
+
+                    <div class="dashboard-process-icon">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+
+                    <h3>
+                        Analyze
+                    </h3>
+
+                    <p>
+                        JobShield analyzes the information for
+                        suspicious and fraudulent patterns.
+                    </p>
+
+                    <div class="dashboard-process-arrow">
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+
+                <div class="dashboard-process-card">
+
+                    <div class="dashboard-step-number">
+                        03
+                    </div>
+
+                    <div class="dashboard-process-icon">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </div>
+
+                    <h3>
+                        Get Results
+                    </h3>
+
+                    <p>
+                        View the risk score, classification and
+                        reasons behind the result.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SAFETY BANNER
+             ================================================= -->
+
+        <section class="dashboard-safety">
+
+            <div class="dashboard-safety-icon">
+                <i class="bi bi-shield-fill-check"></i>
+            </div>
+
+            <div class="dashboard-safety-content">
+
+                <span>
+                    STAY ALERT
+                </span>
+
+                <h2>
+                    Check before you trust.
+                </h2>
+
+                <p>
+                    Use JobShield to identify potential warning signs
+                    before sharing personal information or making payments.
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('verify_job') }}"
+               class="dashboard-safety-btn">
+
+                Verify a Job
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="dashboard-footer">
+
+        <div class="dashboard-footer-inner">
+
+            <div class="dashboard-footer-brand">
+
+                <div class="dashboard-footer-logo">
+                    <img
+                        src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                        alt="JobShield"
+                    >
+                </div>
+
+                <div>
+                    <strong>
+                        Job<span>Shield</span>
+                    </strong>
+
+                    <small>
+                        SAFE JOBS. BRIGHTER FUTURES.
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="dashboard-footer-text">
+                Safer job verification and recruitment awareness.
+            </div>
+
+        </div>
+
+    </footer>
+
+</div>
+
+
+{% endblock %}

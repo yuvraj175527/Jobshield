@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Report Management | JobShield{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/admin_reports.css') }}">
+
+<div class="admin-reports-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        <div>
+            <span class="page-label">ADMINISTRATION</span>
+
+            <h1>Report Management</h1>
+
+            <p>
+                Review suspicious job reports submitted by users
+                and update their investigation status.
+            </p>
+        </div>
+
+        <a href="{{ url_for('admin_dashboard') }}"
+           class="back-btn">
+            ← Admin Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            <div class="flash-container">
+
+                {% for category, message in messages %}
+
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    {% if reports %}
+
+    <!-- REPORT COUNT -->
+
+    <div class="report-count-card">
+
+        <div class="count-icon">
+            📑
+        </div>
+
+        <div>
+            <strong>{{ reports|length }}</strong>
+            <span>Total Report{{ 's' if reports|length != 1 else '' }}</span>
+        </div>
+
+    </div>
+
+
+    <!-- REPORTS -->
+
+    <div class="reports-container">
+
+        {% for report in reports %}
+
+        <div class="admin-report-card">
+
+
+            <!-- REPORT HEADER -->
+
+            <div class="report-header">
+
+                <div class="report-title">
+
+                    <div class="report-icon">
+                        🚨
+                    </div>
+
+                    <div>
+
+                        <span class="report-id">
+                            REPORT #{{ report.id }}
+                        </span>
+
+                        {% if report.company_name %}
+
+                        <h2>
+                            {{ report.company_name }}
+                        </h2>
+
+                        {% else %}
+
+                        <h2>
+                            Reported Job
+                        </h2>
+
+                        {% endif %}
+
+                        {% if report.job_title %}
+
+                        <p>
+                            {{ report.job_title }}
+                        </p>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- CURRENT STATUS -->
+
+                {% set current_status =
+                    report.status|default('Pending', true)
+                %}
+
+                {% set status_lower =
+                    current_status|lower
+                %}
+
+
+                {% if status_lower == 'resolved' %}
+
+                    <span class="status resolved">
+                        ✓ Resolved
+                    </span>
+
+                {% elif status_lower == 'rejected' %}
+
+                    <span class="status rejected">
+                        ✕ Rejected
+                    </span>
+
+                {% elif status_lower == 'under review' %}
+
+                    <span class="status reviewing">
+                        🔍 Under Review
+                    </span>
+
+                {% else %}
+
+                    <span class="status pending">
+                        ⏳ Pending
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- USER INFORMATION -->
+
+            <div class="information-grid">
+
+
+                <div class="information-box">
+
+                    <span class="info-label">
+                        Reported By
+                    </span>
+
+                    <strong>
+                        {{ report.user_name or 'Unknown User' }}
+                    </strong>
+
+                    {% if report.user_email %}
+
+                    <small>
+                        {{ report.user_email }}
+                    </small>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="information-box">
+
+                    <span class="info-label">
+                        Report Reason
+                    </span>
+
+                    <strong>
+                        {{ report.reason }}
+                    </strong>
+
+                </div>
+
+
+                <div class="information-box">
+
+                    <span class="info-label">
+                        Job ID
+                    </span>
+
+                    <strong>
+                        {% if report.job_id %}
+                            #{{ report.job_id }}
+                        {% else %}
+                            Not Linked
+                        {% endif %}
+                    </strong>
+
+                </div>
+
+
+                <div class="information-box">
+
+                    <span class="info-label">
+                        Submitted
+                    </span>
+
+                    <strong>
+                        {% if report.reported_at %}
+                            {{ report.reported_at.strftime('%d %b %Y, %I:%M %p') }}
+                        {% else %}
+                            Not Available
+                        {% endif %}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- DESCRIPTION -->
+
+            {% if report.description %}
+
+            <div class="details-section">
+
+                <span class="info-label">
+                    Report Details
+                </span>
+
+                <div class="details-box">
+                    {{ report.description }}
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- STATUS UPDATE -->
+
+            <div class="status-update-section">
+
+                <div>
+
+                    <span class="info-label">
+                        Update Report Status
+                    </span>
+
+                    <p>
+                        Change the status after reviewing this report.
+                    </p>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'update_report_status',
+                        report_id=report.id
+                    ) }}"
+                    class="status-form"
+                >
+
+                    <select
+                        name="status"
+                        class="status-select"
+                    >
+
+                        <option
+                            value="Pending"
+                            {% if current_status == 'Pending' %}
+                            selected
+                            {% endif %}
+                        >
+                            Pending
+                        </option>
+
+                        <option
+                            value="Under Review"
+                            {% if current_status == 'Under Review' %}
+                            selected
+                            {% endif %}
+                        >
+                            Under Review
+                        </option>
+
+                        <option
+                            value="Resolved"
+                            {% if current_status == 'Resolved' %}
+                            selected
+                            {% endif %}
+                        >
+                            Resolved
+                        </option>
+
+                        <option
+                            value="Rejected"
+                            {% if current_status == 'Rejected' %}
+                            selected
+                            {% endif %}
+                        >
+                            Rejected
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        type="submit"
+                        class="update-btn"
+                    >
+                        Update Status
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% else %}
+
+    <!-- EMPTY -->
+
+    <div class="empty-state">
+
+        <div class="empty-icon">
+            ✓
+        </div>
+
+        <h2>No Reports Found</h2>
+
+        <p>
+            There are currently no fake-job reports submitted
+            by users.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- NOTICE -->
+
+    <div class="admin-notice">
+
+        <span>🛡️</span>
+
+        <p>
+            Only administrators can change report statuses.
+            Status changes are saved directly to the JobShield
+            database and are visible to the reporting user.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

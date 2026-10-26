@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}Register | JobShield{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<nav class="auth-navbar">
+    <div class="auth-navbar-inner">
+
+        <a href="{{ url_for('index') }}" class="auth-brand">
+            <span class="auth-logo">
+                <img src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                     alt="JobShield Logo">
+            </span>
+            <span>JobShield</span>
+        </a>
+
+        <div class="auth-nav-links">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('index') }}#protection">Protection</a>
+            <a href="{{ url_for('index') }}#how-it-works">How It Works</a>
+        </div>
+
+        <div class="auth-nav-actions">
+            <span class="auth-existing">Already registered?</span>
+
+            <a href="{{ url_for('login') }}" class="auth-login-nav">
+                Login
+            </a>
+        </div>
+
+    </div>
+</nav>
+
+
+<main class="auth-page register-page">
+
+    <div class="auth-card register-card">
+
+        <div class="auth-icon">
+            <i class="bi bi-person-plus-fill"></i>
+        </div>
+
+        <div class="auth-heading">
+            <span class="auth-eyebrow">GET STARTED</span>
+
+            <h1>Create Your Account</h1>
+
+            <p>
+                Join JobShield and make safer decisions when
+                evaluating online job opportunities.
+            </p>
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+
+                    <div class="auth-alert
+                        {% if category == 'success' %}
+                            alert-success-custom
+                        {% else %}
+                            alert-danger-custom
+                        {% endif %}">
+
+                        <i class="bi
+                            {% if category == 'success' %}
+                                bi-check-circle-fill
+                            {% else %}
+                                bi-exclamation-circle-fill
+                            {% endif %}">
+                        </i>
+
+                        <span>{{ message }}</span>
+
+                    </div>
+
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <form method="POST"
+              action="{{ url_for('register') }}"
+              class="auth-form">
+
+
+            <!-- Full Name -->
+
+            <div class="auth-field">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+                <div class="auth-input-wrapper">
+
+                    <i class="bi bi-person"></i>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your full name"
+                        required
+                        autocomplete="name">
+
+                </div>
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="auth-field">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <div class="auth-input-wrapper">
+
+                    <i class="bi bi-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email address"
+                        required
+                        autocomplete="email">
+
+                </div>
+
+            </div>
+
+
+            <!-- Password -->
+
+            <div class="auth-field">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="auth-input-wrapper">
+
+                    <i class="bi bi-lock"></i>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create a password"
+                        required
+                        autocomplete="new-password">
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        onclick="togglePassword('password', this)"
+                        aria-label="Show password">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Confirm Password -->
+
+            <div class="auth-field">
+
+                <label for="confirm_password">
+                    Confirm Password
+                </label>
+
+                <div class="auth-input-wrapper">
+
+                    <i class="bi bi-shield-lock"></i>
+
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        placeholder="Confirm your password"
+                        required
+                        autocomplete="new-password">
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        onclick="togglePassword('confirm_password', this)"
+                        aria-label="Show password">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Register Button -->
+
+            <button type="submit" class="auth-submit">
+
+                <span>Create JobShield Account</span>
+
+                <i class="bi bi-arrow-right"></i>
+
+            </button>
+
+        </form>
+
+
+        <div class="auth-divider">
+            <span>OR</span>
+        </div>
+
+
+        <div class="auth-bottom">
+
+            <p>
+                Already have an account?
+            </p>
+
+            <a href="{{ url_for('login') }}">
+
+                Login to your account
+
+                <i class="bi bi-arrow-up-right"></i>
+
+            </a>
+
+        </div>
+
+
+        <div class="auth-security-note">
+
+            <i class="bi bi-shield-check"></i>
+
+            <span>
+                Your credentials are protected using secure password hashing.
+            </span>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer class="auth-footer">
+
+    <div class="auth-footer-inner">
+
+        <div class="auth-footer-brand">
+
+            <span class="auth-footer-logo">
+
+                <img
+                    src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                    alt="JobShield Logo">
+
+            </span>
+
+            <div>
+
+                <strong>JobShield</strong>
+
+                <small>
+                    Fake Job Detection & Verification System
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="auth-footer-text">
+
+            <span>
+                © 2026 JobShield
+            </span>
+
+            <span>
+                Academic Project • TYCS
+            </span>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+{% block extra_js %}
+
+<script>
+
+function togglePassword(inputId, button) {
+
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector("i");
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+
+    } else {
+
+        input.type = "password";
+
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+
+    }
+
+}
+
+
+document.querySelector(".register-card form").addEventListener("submit", function(event) {
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirm_password").value;
+
+
+    if (password !== confirmPassword) {
+
+        event.preventDefault();
+
+        alert("Passwords do not match.");
+
+    }
+
+});
+
+</script>
+
+{% endblock %}
+
+{% endblock %}

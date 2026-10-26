@@ -1,0 +1,543 @@
+{% extends "base.html" %}
+
+{% block title %}Report Job - JobShield{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report_job.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="report-page">
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="report-navbar">
+
+        <div class="report-navbar-inner">
+
+            <a href="{{ url_for('dashboard') }}" class="report-brand">
+
+                <div class="report-logo-wrap">
+                    <img
+                        src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                        alt="JobShield"
+                        class="report-logo"
+                    >
+                </div>
+
+                <div class="report-brand-info">
+
+                    <div class="report-brand-name">
+                        Job<span>Shield</span>
+                    </div>
+
+                    <div class="report-tagline">
+                        SAFE JOBS. BRIGHTER FUTURES.
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- NAV -->
+
+            <div class="report-nav">
+
+                <a href="{{ url_for('dashboard') }}"
+                   class="report-nav-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+
+                </a>
+
+                <a href="{{ url_for('verify_job') }}"
+                   class="report-nav-item">
+
+                    <i class="bi bi-shield-check"></i>
+                    <span>Verify Job</span>
+
+                </a>
+
+                <a href="{{ url_for('verification_history') }}"
+                   class="report-nav-item">
+
+                    <i class="bi bi-clock-history"></i>
+                    <span>History</span>
+
+                </a>
+
+                <a href="{{ url_for('report_job') }}"
+                   class="report-nav-item active">
+
+                    <i class="bi bi-flag-fill"></i>
+                    <span>Report</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- PROFILE -->
+
+            <div class="report-profile-area">
+
+                <div class="report-profile">
+
+                    <div class="report-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="report-profile-text">
+
+                        <span class="report-profile-label">
+                            SIGNED IN AS
+                        </span>
+
+                        <span class="report-user-name">
+                            {{ session.get('user_name', 'User') }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('logout') }}" class="report-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Logout</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="report-main">
+
+
+        <!-- HEADER -->
+
+        <section class="report-page-header">
+
+            <div class="report-eyebrow">
+                <i class="bi bi-flag-fill"></i>
+                SAFETY REPORT
+            </div>
+
+            <h1>Report a Job</h1>
+
+            <p>
+                Report a suspicious or potentially fraudulent job opportunity for review.
+            </p>
+
+        </section>
+
+
+        <!-- CONTENT -->
+
+        <div class="report-layout">
+
+
+            <!-- ================= FORM CARD ================= -->
+
+            <section class="report-card">
+
+                <div class="report-card-header">
+
+                    <div class="report-card-heading">
+
+                        <div class="report-card-icon">
+                            <i class="bi bi-flag"></i>
+                        </div>
+
+                        <div>
+
+                            <h2>Report Details</h2>
+
+                            <p>
+                                Provide the information related to the job you want to report.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="report-secure">
+                        <i class="bi bi-shield-check"></i>
+                        Safety Report
+                    </div>
+
+                </div>
+
+
+                <!-- FORM -->
+
+                <form
+                    method="POST"
+                    action="{{ url_for('report_job') }}"
+                    class="report-form"
+                >
+
+                    <div class="report-section-title">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Report Information
+                    </div>
+
+
+                    <!-- JOB ID -->
+
+                    <div class="report-field">
+
+                        <label for="job_id">
+                            <i class="bi bi-hash"></i>
+                            Job ID
+                            <span class="optional">(Optional)</span>
+                        </label>
+
+                        <div class="report-input-wrap">
+
+                            <i class="bi bi-hash report-field-icon"></i>
+
+                            <input
+                                type="number"
+                                id="job_id"
+                                name="job_id"
+                                class="report-input"
+                                placeholder="Enter job ID"
+                            >
+
+                        </div>
+
+                        <div class="report-help">
+                            If the job was previously verified, enter its Job ID.
+                        </div>
+
+                    </div>
+
+
+                    <!-- REASON -->
+
+                    <div class="report-field">
+
+                        <label for="reason">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Reason for Report
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="report-input-wrap">
+
+                            <i class="bi bi-exclamation-triangle report-field-icon"></i>
+
+                            <select
+                                id="reason"
+                                name="reason"
+                                class="report-select"
+                                required
+                            >
+
+                                <option value="" selected disabled>
+                                    Select a reason
+                                </option>
+
+                                <option value="Fake Job">
+                                    Fake Job
+                                </option>
+
+                                <option value="Payment Request">
+                                    Payment Request
+                                </option>
+
+                                <option value="Personal Information Request">
+                                    Personal Information Request
+                                </option>
+
+                                <option value="Fraudulent Recruiter">
+                                    Fraudulent Recruiter
+                                </option>
+
+                                <option value="Suspicious Website">
+                                    Suspicious Website
+                                </option>
+
+                                <option value="Misleading Salary">
+                                    Misleading Salary
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="report-field">
+
+                        <label for="description">
+                            <i class="bi bi-card-text"></i>
+                            Description
+                            <span class="required">*</span>
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            class="report-textarea"
+                            placeholder="Describe why you believe this job is suspicious or fraudulent..."
+                            required
+                        ></textarea>
+
+                        <div class="report-help">
+                            Include any suspicious messages, payment requests,
+                            recruiter details or other relevant information.
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUBMIT -->
+
+                    <div class="report-submit">
+
+                        <div class="report-submit-info">
+
+                            <i class="bi bi-shield-check"></i>
+
+                            <span>
+                                Your report will be submitted for review.
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="report-submit-btn"
+                        >
+
+                            <i class="bi bi-flag-fill"></i>
+                            Submit Report
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <!-- ================= SIDEBAR ================= -->
+
+            <aside class="report-sidebar">
+
+
+                <!-- INFORMATION -->
+
+                <div class="report-side-card">
+
+                    <div class="report-side-heading">
+
+                        <div class="report-side-icon">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>Why Report?</h3>
+
+                            <span>Help identify suspicious jobs</span>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Reporting suspicious opportunities helps identify
+                        potentially fraudulent recruitment activity.
+                    </p>
+
+                </div>
+
+
+                <!-- COMMON REASONS -->
+
+                <div class="report-side-card">
+
+                    <div class="report-side-heading">
+
+                        <div class="report-side-icon">
+                            <i class="bi bi-shield-exclamation"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>Common Warning Signs</h3>
+
+                            <span>Things worth reporting</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-check-list">
+
+
+                        <div class="report-check">
+
+                            <div class="report-check-icon">
+                                <i class="bi bi-currency-rupee"></i>
+                            </div>
+
+                            <div>
+                                <strong>Payment Requests</strong>
+
+                                <span>
+                                    Requests for registration, training or application fees.
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-check">
+
+                            <div class="report-check-icon">
+                                <i class="bi bi-person-lock"></i>
+                            </div>
+
+                            <div>
+                                <strong>Sensitive Information</strong>
+
+                                <span>
+                                    Requests for bank, identity or financial information.
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-check">
+
+                            <div class="report-check-icon">
+                                <i class="bi bi-chat-dots"></i>
+                            </div>
+
+                            <div>
+                                <strong>Suspicious Communication</strong>
+
+                                <span>
+                                    Unusual WhatsApp, Telegram or personal email contact.
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-check">
+
+                            <div class="report-check-icon">
+                                <i class="bi bi-cash-stack"></i>
+                            </div>
+
+                            <div>
+                                <strong>Unrealistic Offers</strong>
+
+                                <span>
+                                    Salary or benefits that appear unusually high.
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HISTORY -->
+
+                <div class="report-side-card">
+
+                    <div class="report-side-heading">
+
+                        <div class="report-side-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>Verification History</h3>
+
+                            <span>Check previously verified jobs</span>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        You can review your previous verification results
+                        before submitting a report.
+                    </p>
+
+                    <a
+                        href="{{ url_for('verification_history') }}"
+                        class="report-history-btn"
+                    >
+
+                        <i class="bi bi-clock-history"></i>
+                        View History
+
+                    </a>
+
+                </div>
+
+
+                <!-- NOTICE -->
+
+                <div class="report-notice">
+
+                    <div class="report-notice-title">
+                        <i class="bi bi-exclamation-circle"></i>
+                        Please provide accurate information
+                    </div>
+
+                    <p>
+                        Include clear details that can help with reviewing
+                        the reported opportunity.
+                    </p>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer class="report-footer">
+
+        <span>
+            JobShield &nbsp;•&nbsp; Safer job verification
+        </span>
+
+    </footer>
+
+</div>
+
+{% endblock %}

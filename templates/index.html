@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JobShield - Fake Job Detection & Verification</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+<style>
+
+/* =====================================================
+   COMPANY PHOTO SLIDESHOW
+   ===================================================== */
+
+.company-slideshow {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    height: 430px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #0f172a;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+.company-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.company-slide.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.company-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 6s ease;
+}
+
+.company-slide.active img {
+    transform: scale(1.05);
+}
+
+.company-slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            to top,
+            rgba(3, 7, 18, 0.92) 0%,
+            rgba(3, 7, 18, 0.45) 45%,
+            rgba(3, 7, 18, 0.05) 100%
+        );
+    pointer-events: none;
+}
+
+.company-overlay {
+    position: absolute;
+    left: 30px;
+    right: 30px;
+    bottom: 55px;
+    z-index: 2;
+    color: white;
+}
+
+.company-overlay h3 {
+    font-size: 34px;
+    font-weight: 800;
+    margin: 12px 0 6px;
+}
+
+.company-overlay p {
+    font-size: 15px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.company-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.slide-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+
+    width: 42px;
+    height: 42px;
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.35);
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+
+    transition: all 0.25s ease;
+}
+
+.slide-arrow:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%) scale(1.08);
+}
+
+.slide-arrow i {
+    font-size: 20px;
+}
+
+.slide-prev {
+    left: 18px;
+}
+
+.slide-next {
+    right: 18px;
+}
+
+.slide-dots {
+    position: absolute;
+    z-index: 5;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slide-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.slide-dot.active {
+    width: 24px;
+    border-radius: 10px;
+    background: white;
+}
+
+@media (max-width: 992px) {
+
+    .company-slideshow {
+        max-width: 100%;
+        height: 380px;
+    }
+
+}
+
+@media (max-width: 576px) {
+
+    .company-slideshow {
+        height: 320px;
+        border-radius: 18px;
+    }
+
+    .company-overlay {
+        left: 20px;
+        right: 20px;
+        bottom: 50px;
+    }
+
+    .company-overlay h3 {
+        font-size: 27px;
+    }
+
+    .company-overlay p {
+        font-size: 13px;
+    }
+
+    .slide-arrow {
+        width: 36px;
+        height: 36px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<nav class="main-navbar">
+
+    <div class="main-navbar-inner">
+
+        <a href="/" class="main-brand">
+
+            <div class="main-logo">
+
+                <img
+                    src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                    alt="JobShield Logo"
+                >
+
+            </div>
+
+            <div class="main-brand-text">
+
+                <div class="main-brand-name">
+
+                    Job<span>Shield</span>
+
+                </div>
+
+                <div class="main-brand-tagline">
+
+                    SAFE JOBS. BRIGHTER FUTURES.
+
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <div class="main-nav">
+
+            <a href="/" class="active">
+
+                Home
+
+            </a>
+
+            <a href="/verify-job">
+
+                Verify Job
+
+            </a>
+
+            <a href="#protection">
+
+                Protection
+
+            </a>
+
+            <a href="#how-it-works">
+
+                How It Works
+
+            </a>
+
+        </div>
+
+
+        <div class="main-auth">
+
+            <a href="/login" class="login-btn">
+
+                Login
+
+            </a>
+
+            <a href="/admin/login" class="login-btn">
+
+                Admin Login
+
+            </a>
+
+            <a href="/register" class="register-btn">
+
+                Register
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =====================================================
+     HERO
+     ===================================================== -->
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+
+                <i class="bi bi-shield-check"></i>
+
+                Intelligent Job Verification
+
+            </div>
+
+
+            <h1>
+
+                Detect Fake Jobs.
+
+                <span>Protect Your Career.</span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                JobShield analyzes job advertisements using rule-based
+
+                risk indicators, website verification and a machine
+
+                learning model trained on real-world job advertisements
+
+                to identify potentially fraudulent opportunities.
+
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <a href="/verify-job" class="primary-btn">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    Verify a Job
+
+                </a>
+
+
+                <a href="#how-it-works" class="secondary-btn">
+
+                    <i class="bi bi-play-circle"></i>
+
+                    How It Works
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             COMPANY PHOTO SLIDESHOW
+             ================================================= -->
+
+        <div class="hero-visual">
+
+            <div class="company-slideshow">
+
+                <!-- MICROSOFT -->
+                <div class="company-slide active">
+
+                    <img
+                        src="{{ url_for('static', filename='images/microsoft.jpg') }}"
+                        alt="Microsoft"
+                    >
+
+                    <div class="company-overlay">
+
+                        <div class="company-badge">
+
+                            <i class="bi bi-building"></i>
+
+                            Company Verification
+
+                        </div>
+
+                        <h3>Microsoft</h3>
+
+                        <p>
+                            Verify job opportunities before you apply.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GOOGLE -->
+                <div class="company-slide">
+
+                    <img
+                        src="{{ url_for('static', filename='images/google.jpg') }}"
+                        alt="Google"
+                    >
+
+                    <div class="company-overlay">
+
+                        <div class="company-badge">
+
+                            <i class="bi bi-building"></i>
+
+                            Company Verification
+
+                        </div>
+
+                        <h3>Google</h3>
+
+                        <p>
+                            Check whether a job opportunity is genuine.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AMAZON -->
+                <div class="company-slide">
+
+                    <img
+                        src="{{ url_for('static', filename='images/amazon.jpg') }}"
+                        alt="Amazon"
+                    >
+
+                    <div class="company-overlay">
+
+                        <div class="company-badge">
+
+                            <i class="bi bi-building"></i>
+
+                            Company Verification
+
+                        </div>
+
+                        <h3>Amazon</h3>
+
+                        <p>
+                            Check the company and recruitment source.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INFOSYS -->
+                <div class="company-slide">
+
+                    <img
+                        src="{{ url_for('static', filename='images/infosys.jpg') }}"
+                        alt="Infosys"
+                    >
+
+                    <div class="company-overlay">
+
+                        <div class="company-badge">
+
+                            <i class="bi bi-building"></i>
+
+                            Company Verification
+
+                        </div>
+
+                        <h3>Infosys</h3>
+
+                        <p>
+                            Verify recruitment information before applying.
+                        </p>
+
+                    </div>
+
+                </div>
+                                <!-- TCS -->
+                <div class="company-slide">
+
+                    <img
+                        src="{{ url_for('static', filename='images/tcs.jpg') }}"
+                        alt="TCS"
+                    >
+
+                    <div class="company-overlay">
+
+                        <div class="company-badge">
+
+                            <i class="bi bi-building"></i>
+
+                            Company Verification
+
+                        </div>
+
+                        <h3>TCS</h3>
+
+                        <p>
+                            Check job listings through trusted sources.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACCENTURE -->
+                <div class="company-slide">
+
+                    <img
+                        src="{{ url_for('static', filename='images/accenture.jpg') }}"
+                        alt="Accenture"
+                    >
+
+                    <div class="company-overlay">
+
+                        <div class="company-badge">
+
+                            <i class="bi bi-building"></i>
+
+                            Company Verification
+
+                        </div>
+
+                        <h3>Accenture</h3>
+
+                        <p>
+                            Stay protected from suspicious job offers.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PREVIOUS BUTTON -->
+
+                <button
+                    class="slide-arrow slide-prev"
+                    onclick="changeCompanySlide(-1)"
+                    type="button"
+                >
+
+                    <i class="bi bi-chevron-left"></i>
+
+                </button>
+
+
+                <!-- NEXT BUTTON -->
+
+                <button
+                    class="slide-arrow slide-next"
+                    onclick="changeCompanySlide(1)"
+                    type="button"
+                >
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </button>
+
+
+                <!-- SLIDE DOTS -->
+
+                <div class="slide-dots">
+
+                    <span
+                        class="slide-dot active"
+                        onclick="showCompanySlide(0)"
+                    ></span>
+
+                    <span
+                        class="slide-dot"
+                        onclick="showCompanySlide(1)"
+                    ></span>
+
+                    <span
+                        class="slide-dot"
+                        onclick="showCompanySlide(2)"
+                    ></span>
+
+                    <span
+                        class="slide-dot"
+                        onclick="showCompanySlide(3)"
+                    ></span>
+
+                    <span
+                        class="slide-dot"
+                        onclick="showCompanySlide(4)"
+                    ></span>
+
+                    <span
+                        class="slide-dot"
+                        onclick="showCompanySlide(5)"
+                    ></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROTECTION SECTION
+     ===================================================== -->
+
+<section class="protection-section" id="protection">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-badge">
+
+                <i class="bi bi-shield-check"></i>
+
+                Protection
+
+            </div>
+
+            <h2>
+
+                Stay Protected From Fake Jobs
+
+            </h2>
+
+            <p>
+
+                JobShield helps you identify suspicious recruitment
+                opportunities before they become a problem.
+
+            </p>
+
+        </div>
+
+
+        <div class="protection-grid">
+
+
+            <!-- CARD 1 -->
+
+            <div class="protection-card">
+
+                <div class="protection-icon">
+
+                    <i class="bi bi-search"></i>
+
+                </div>
+
+                <h3>
+
+                    Job Verification
+
+                </h3>
+
+                <p>
+
+                    Submit a job advertisement and check its
+                    details before applying.
+
+                </p>
+
+            </div>
+
+
+            <!-- CARD 2 -->
+
+            <div class="protection-card">
+
+                <div class="protection-icon">
+
+                    <i class="bi bi-globe2"></i>
+
+                </div>
+
+                <h3>
+
+                    Website Verification
+
+                </h3>
+
+                <p>
+
+                    Analyze the submitted website and identify
+                    potential warning signs.
+
+                </p>
+
+            </div>
+
+
+            <!-- CARD 3 -->
+
+            <div class="protection-card">
+
+                <div class="protection-icon">
+
+                    <i class="bi bi-graph-up"></i>
+
+                </div>
+
+                <h3>
+
+                    Risk Analysis
+
+                </h3>
+
+                <p>
+
+                    Multiple job and website indicators are
+                    analyzed to calculate a risk score.
+
+                </p>
+
+            </div>
+
+
+            <!-- CARD 4 -->
+
+            <div class="protection-card">
+
+                <div class="protection-icon">
+
+                    <i class="bi bi-cpu"></i>
+
+                </div>
+
+                <h3>
+
+                    Machine Learning
+
+                </h3>
+
+                <p>
+
+                    JobShield uses machine learning patterns
+                    to support suspicious job detection.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HOW IT WORKS
+     ===================================================== -->
+
+<section class="how-section" id="how-it-works">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-badge">
+
+                <i class="bi bi-diagram-3"></i>
+
+                How It Works
+
+            </div>
+
+            <h2>
+
+                Verify Before You Apply
+
+            </h2>
+
+            <p>
+
+                JobShield follows a simple verification process
+                to analyze potentially suspicious job opportunities.
+
+            </p>
+
+        </div>
+
+
+        <div class="steps-grid">
+
+
+            <!-- STEP 1 -->
+
+            <div class="step-card">
+
+                <div class="step-number">
+
+                    01
+
+                </div>
+
+                <div class="step-icon">
+
+                    <i class="bi bi-link-45deg"></i>
+
+                </div>
+
+                <h3>
+
+                    Submit Job
+
+                </h3>
+
+                <p>
+
+                    Enter the job information or job URL
+                    you want to verify.
+
+                </p>
+
+            </div>
+
+
+            <!-- STEP 2 -->
+
+            <div class="step-card">
+
+                <div class="step-number">
+
+                    02
+
+                </div>
+
+                <div class="step-icon">
+
+                    <i class="bi bi-search"></i>
+
+                </div>
+
+                <h3>
+
+                    Analyze
+
+                </h3>
+
+                <p>
+
+                    JobShield analyzes the job details,
+                    website and risk indicators.
+
+                </p>
+
+            </div>
+
+
+            <!-- STEP 3 -->
+
+            <div class="step-card">
+
+                <div class="step-number">
+
+                    03
+
+                </div>
+
+                <div class="step-icon">
+
+                    <i class="bi bi-cpu"></i>
+
+                </div>
+
+                <h3>
+
+                    Process
+
+                </h3>
+
+                <p>
+
+                    Rule-based analysis and machine learning
+                    are used to support the verification.
+
+                </p>
+
+            </div>
+
+
+            <!-- STEP 4 -->
+
+            <div class="step-card">
+
+                <div class="step-number">
+
+                    04
+
+                </div>
+
+                <div class="step-icon">
+
+                    <i class="bi bi-shield-check"></i>
+
+                </div>
+
+                <h3>
+
+                    Get Result
+
+                </h3>
+
+                <p>
+
+                    View the calculated risk level and
+                    supporting reasons.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+<!-- =====================================================
+     FEATURES
+     ===================================================== -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                JobShield Protection
+            </div>
+
+            <h2>
+                More Than Just a Fake Job Detector
+            </h2>
+
+            <p>
+                JobShield combines several verification techniques
+                to analyze different aspects of a job advertisement.
+            </p>
+
+        </div>
+
+
+        <div class="features-grid">
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="bi bi-link-45deg"></i>
+                </div>
+
+                <h3>
+                    Website Verification
+                </h3>
+
+                <p>
+                    Checks the submitted job URL, website accessibility,
+                    HTTPS connection, redirects and final domain.
+                    Known company domains can also be compared with
+                    the submitted domain.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+
+                <h3>
+                    Risk Indicator Analysis
+                </h3>
+
+                <p>
+                    Rule-based analysis checks indicators such as
+                    application fees, sensitive information requests,
+                    unrealistic salaries, urgency, messaging platforms
+                    and suspicious recruitment language.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="bi bi-robot"></i>
+                </div>
+
+                <h3>
+                    Machine Learning
+                </h3>
+
+                <p>
+                    A Logistic Regression model trained using the
+                    EMSCAD dataset analyzes job-related text and
+                    calculates the probability that an advertisement
+                    follows fraudulent patterns.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="bi bi-bar-chart"></i>
+                </div>
+
+                <h3>
+                    Risk Score
+                </h3>
+
+                <p>
+                    Rule-based indicators and the machine learning
+                    prediction are combined into a hybrid risk score
+                    ranging from 0 to 100.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+
+                <h3>
+                    Verification History
+                </h3>
+
+                <p>
+                    Previous job verification results are stored so
+                    users can review their analyzed jobs and risk
+                    information later.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="bi bi-flag"></i>
+                </div>
+
+                <h3>
+                    Report Suspicious Jobs
+                </h3>
+
+                <p>
+                    Users can report suspicious job advertisements
+                    and provide additional information that can
+                    help identify potentially fraudulent listings.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HOW IT WORKS
+     ===================================================== -->
+
+<section class="section" id="how-it-works">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                Simple Verification Process
+            </div>
+
+            <h2>
+                How JobShield Works
+            </h2>
+
+            <p>
+                JobShield analyzes a job advertisement through
+                multiple verification stages before generating
+                a final risk result.
+            </p>
+
+        </div>
+
+
+        <div class="steps-grid">
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <div class="step-icon">
+                    <i class="bi bi-link-45deg"></i>
+                </div>
+
+                <h3>
+                    Submit Job
+                </h3>
+
+                <p>
+                    Enter the job advertisement details or
+                    submit the job URL for verification.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <div class="step-icon">
+                    <i class="bi bi-globe"></i>
+                </div>
+
+                <h3>
+                    Website Check
+                </h3>
+
+                <p>
+                    The submitted website is checked for
+                    accessibility, HTTPS, redirects and domain
+                    information.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <div class="step-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+
+                <h3>
+                    Risk Analysis
+                </h3>
+
+                <p>
+                    Job content is examined for suspicious
+                    language and common fake-job indicators.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    04
+                </div>
+
+                <div class="step-icon">
+                    <i class="bi bi-cpu"></i>
+                </div>
+
+                <h3>
+                    ML Prediction
+                </h3>
+
+                <p>
+                    The machine learning model analyzes the
+                    advertisement and calculates its fraud
+                    probability.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    05
+                </div>
+
+                <div class="step-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+
+                <h3>
+                    Final Result
+                </h3>
+
+                <p>
+                    The rule-based and machine learning results
+                    are combined into a final hybrid risk score.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- COMPLETE PIPELINE -->
+
+<div class="pipeline-wrapper">
+
+    <div class="pipeline-title">
+        Complete JobShield Analysis Pipeline
+    </div>
+
+    <div class="pipeline">
+
+        <div class="pipeline-step">
+            <div class="pipeline-icon">
+                <i class="bi bi-person"></i>
+            </div>
+            <div class="pipeline-text">
+                User
+            </div>
+        </div>
+
+        <div class="pipeline-arrow">
+            <i class="bi bi-arrow-right"></i>
+        </div>
+
+        <div class="pipeline-step">
+            <div class="pipeline-icon">
+                <i class="bi bi-link-45deg"></i>
+            </div>
+            <div class="pipeline-text">
+                Job URL
+            </div>
+        </div>
+
+        <div class="pipeline-arrow">
+            <i class="bi bi-arrow-right"></i>
+        </div>
+
+        <div class="pipeline-step">
+            <div class="pipeline-icon">
+                <i class="bi bi-globe"></i>
+            </div>
+            <div class="pipeline-text">
+                Website Check
+            </div>
+        </div>
+
+        <div class="pipeline-arrow">
+            <i class="bi bi-arrow-right"></i>
+        </div>
+
+        <div class="pipeline-step">
+            <div class="pipeline-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            <div class="pipeline-text">
+                Risk Analysis
+            </div>
+        </div>
+
+        <div class="pipeline-arrow">
+            <i class="bi bi-arrow-right"></i>
+        </div>
+
+        <div class="pipeline-step">
+            <div class="pipeline-icon">
+                <i class="bi bi-cpu"></i>
+            </div>
+            <div class="pipeline-text">
+                ML Prediction
+            </div>
+        </div>
+
+        <div class="pipeline-arrow">
+            <i class="bi bi-arrow-right"></i>
+        </div>
+
+        <div class="pipeline-step">
+            <div class="pipeline-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="pipeline-text">
+                Final Result
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     VERIFICATION SECTION
+     ===================================================== -->
+
+<section class="verification-section">
+
+    <div class="container">
+
+        <div class="verification-content">
+
+            <div class="verification-text">
+
+                <div class="section-label">
+                    Verify Before You Apply
+                </div>
+
+                <h2>
+                    Check a Job Advertisement
+                </h2>
+
+                <p>
+                    Before sharing personal information or applying
+                    for a job, use JobShield to analyze the advertisement
+                    and identify potentially suspicious indicators.
+                </p>
+
+                <a href="/verify-job" class="primary-btn">
+                    <i class="bi bi-shield-check"></i>
+                    Verify a Job
+                </a>
+
+            </div>
+
+
+            <div class="verification-visual">
+
+                <div class="verification-card">
+
+                    <div class="verification-card-header">
+
+                        <div class="verification-card-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                        <div>
+                            <div class="verification-card-title">
+                                Job Verification
+                            </div>
+
+                            <div class="verification-card-subtitle">
+                                Multi-stage analysis
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="verification-check">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Website Checked
+                        </span>
+
+                    </div>
+
+
+                    <div class="verification-check">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Risk Indicators Analyzed
+                        </span>
+
+                    </div>
+
+
+                    <div class="verification-check">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Machine Learning Applied
+                        </span>
+
+                    </div>
+
+
+                    <div class="verification-check">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Hybrid Risk Score Generated
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<div class="pipeline">
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-pencil-square"></i>
+        </div>
+
+        <span>
+            Job Details
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-check-circle"></i>
+        </div>
+
+        <span>
+            Validation
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-globe"></i>
+        </div>
+
+        <span>
+            URL Check
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-search"></i>
+        </div>
+
+        <span>
+            Rule Analysis
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-file-text"></i>
+        </div>
+
+        <span>
+            Text Processing
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-grid-3x3-gap"></i>
+        </div>
+
+        <span>
+            TF-IDF
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-cpu"></i>
+        </div>
+
+        <span>
+            Logistic Regression
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-diagram-3"></i>
+        </div>
+
+        <span>
+            Hybrid Analysis
+        </span>
+
+    </div>
+
+
+    <div class="pipeline-arrow">
+        <i class="bi bi-arrow-right"></i>
+    </div>
+
+
+    <div class="pipeline-step">
+
+        <div class="pipeline-icon">
+            <i class="bi bi-shield-check"></i>
+        </div>
+
+        <span>
+            Risk Result
+        </span>
+
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     ML SECTION
+     ===================================================== -->
+
+<section class="section ml-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                Machine Learning
+            </div>
+
+            <h2>
+                How the JobShield ML Model Works
+            </h2>
+
+            <p>
+                The machine learning component learns statistical
+                patterns from labeled job advertisements and uses
+                those patterns to estimate fraudulent-job probability.
+            </p>
+
+        </div>
+
+
+        <div class="ml-intro">
+
+
+            <div class="ml-intro-content">
+
+                <h3>
+                    From Job Text to Fraud Probability
+                </h3>
+
+                <p>
+                    JobShield uses the Employment Scam Aegean Dataset,
+                    commonly referred to as EMSCAD, as the training
+                    dataset for its fake-job classification model.
+                </p>
+
+                <p>
+                    The job-related text is converted into numerical
+                    features using TF-IDF. These features are then
+                    processed by a Logistic Regression classifier
+                    trained to distinguish between legitimate and
+                    fraudulent job advertisements.
+                </p>
+
+
+                <div class="ml-feature-list">
+
+
+                    <div class="ml-feature">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Job advertisements are labeled as
+                            legitimate or fraudulent.
+                        </span>
+
+                    </div>
+
+
+                    <div class="ml-feature">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Text is converted into numerical
+                            TF-IDF features.
+                        </span>
+
+                    </div>
+
+
+                    <div class="ml-feature">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            Logistic Regression learns patterns
+                            from the training data.
+                        </span>
+
+                    </div>
+
+
+                    <div class="ml-feature">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            The trained model generates a
+                            fraudulent-job probability.
+                        </span>
+
+                    </div>
+
+
+                    <div class="ml-feature">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            A 70% probability threshold is used
+                            by the current model.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="ml-visual">
+
+                <div class="ml-card">
+
+                    <div class="ml-card-header">
+                        <i class="bi bi-cpu"></i>
+
+                        <span>
+                            ML Classification Pipeline
+                        </span>
+                    </div>
+
+                    <div class="ml-flow">
+
+                        <div class="ml-flow-item">
+                            Job Text
+                        </div>
+
+                        <div class="ml-flow-arrow">
+                            <i class="bi bi-arrow-down"></i>
+                        </div>
+
+                        <div class="ml-flow-item">
+                            TF-IDF
+                        </div>
+
+                        <div class="ml-flow-arrow">
+                            <i class="bi bi-arrow-down"></i>
+                        </div>
+
+                        <div class="ml-flow-item">
+                            Logistic Regression
+                        </div>
+
+                        <div class="ml-flow-arrow">
+                            <i class="bi bi-arrow-down"></i>
+                        </div>
+
+                        <div class="ml-flow-item">
+                            Fraud Probability
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+            <div class="model-card">
+
+                <div class="model-card-top">
+
+                    <div class="model-name">
+                        Current ML Model
+                    </div>
+
+                    <div class="model-badge">
+                        TRAINED MODEL
+                    </div>
+
+                </div>
+
+
+                <div class="model-details">
+
+
+                    <div class="model-detail">
+
+                        <div class="model-detail-label">
+                            Algorithm
+                        </div>
+
+                        <div class="model-detail-value">
+                            Logistic Regression
+                        </div>
+
+                    </div>
+
+
+                    <div class="model-detail">
+
+                        <div class="model-detail-label">
+                            Feature Extraction
+                        </div>
+
+                        <div class="model-detail-value">
+                            TF-IDF
+                        </div>
+
+                    </div>
+
+
+                    <div class="model-detail">
+
+                        <div class="model-detail-label">
+                            N-Grams
+                        </div>
+
+                        <div class="model-detail-value">
+                            1–2
+                        </div>
+
+                    </div>
+
+
+                    <div class="model-detail">
+
+                        <div class="model-detail-label">
+                            Class Weight
+                        </div>
+
+                        <div class="model-detail-value">
+                            Balanced
+                        </div>
+
+                    </div>
+
+
+                    <div class="model-detail">
+
+                        <div class="model-detail-label">
+                            Classification
+                        </div>
+
+                        <div class="model-detail-value">
+                            Genuine / Fake
+                        </div>
+
+                    </div>
+
+
+                    <div class="model-detail">
+
+                        <div class="model-detail-label">
+                            Selected Threshold
+                        </div>
+
+                        <div class="model-detail-value">
+                            70%
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ML PROCESS -->
+
+        <div class="ml-process-card">
+
+            <div class="ml-process-title">
+                ML Training & Prediction Process
+            </div>
+
+
+            <div class="ml-process">
+
+
+                <div class="ml-process-step">
+
+                    <div class="ml-process-number">
+                        STEP 01
+                    </div>
+
+                    <h4>
+                        Training Dataset
+                    </h4>
+
+                    <p>
+                        17,880 job advertisements from EMSCAD
+                        are used as the dataset.
+                    </p>
+
+                </div>
+
+
+                <div class="ml-process-step">
+
+                    <div class="ml-process-number">
+                        STEP 02
+                    </div>
+
+                    <h4>
+                        Data Preparation
+                    </h4>
+
+                    <p>
+                        Relevant job advertisement text is prepared
+                        for machine learning.
+                    </p>
+
+                </div>
+
+
+                <div class="ml-process-step">
+
+                    <div class="ml-process-number">
+                        STEP 03
+                    </div>
+
+                    <h4>
+                        TF-IDF
+                    </h4>
+
+                    <p>
+                        Text is transformed into numerical feature
+                        vectors using TF-IDF.
+                    </p>
+
+                </div>
+
+
+                <div class="ml-process-step">
+
+                    <div class="ml-process-number">
+                        STEP 04
+                    </div>
+
+                    <h4>
+                        Model Training
+                    </h4>
+
+                    <p>
+                        Logistic Regression learns statistical
+                        relationships between text features and labels.
+                    </p>
+
+                </div>
+
+
+                <div class="ml-process-step">
+
+                    <div class="ml-process-number">
+                        STEP 05
+                    </div>
+
+                    <h4>
+                        Model Testing
+                    </h4>
+
+                    <p>
+                        The trained model is evaluated using
+                        3,576 testing samples.
+                    </p>
+
+                </div>
+
+
+                <div class="ml-process-step">
+
+                    <div class="ml-process-number">
+                        STEP 06
+                    </div>
+
+                    <h4>
+                        Fraud Probability
+                    </h4>
+
+                    <p>
+                        The model generates a probability that
+                        the submitted job is fraudulent.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     DATASET SECTION
+     ===================================================== -->
+
+<section class="section dataset-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                Training Dataset
+            </div>
+
+            <h2>
+                EMSCAD Dataset Used by JobShield
+            </h2>
+
+            <p>
+                The current JobShield machine learning model was
+                trained using labeled job advertisements from EMSCAD.
+            </p>
+
+        </div>
+
+
+        <div class="dataset-box">
+
+
+            <div class="dataset-header">
+
+                <div>
+
+                    <h3>
+                        17,880 Job Advertisements
+                    </h3>
+
+                    <p>
+                        The Employment Scam Aegean Dataset contains
+                        job advertisements labeled for legitimate
+                        and fraudulent recruitment patterns. JobShield
+                        uses this data to train its text classification
+                        model.
+                    </p>
+
+                </div>
+
+            </div>
+                        </div>
+
+
+            <div class="dataset-name">
+                EMSCAD
+            </div>
+
+        </div>
+
+
+        <div class="dataset-stats">
+
+
+            <div class="dataset-stat">
+
+                <div class="dataset-stat-number">
+                    17,880
+                </div>
+
+                <div class="dataset-stat-label">
+                    Total job advertisements
+                </div>
+
+            </div>
+
+
+            <div class="dataset-stat">
+
+                <div class="dataset-stat-number">
+                    17,014
+                </div>
+
+                <div class="dataset-stat-label">
+                    Legitimate advertisements
+                </div>
+
+            </div>
+
+
+            <div class="dataset-stat">
+
+                <div class="dataset-stat-number">
+                    866
+                </div>
+
+                <div class="dataset-stat-label">
+                    Fraudulent advertisements
+                </div>
+
+            </div>
+
+
+            <div class="dataset-stat">
+
+                <div class="dataset-stat-number">
+                    2
+                </div>
+
+                <div class="dataset-stat-label">
+                    Classification labels
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="dataset-info">
+
+
+            <div class="dataset-info-card">
+
+                <h4>
+                    Training Data
+                </h4>
+
+                <p>
+                    14,304 job advertisements were used during
+                    model training.
+                </p>
+
+            </div>
+
+
+            <div class="dataset-info-card">
+
+                <h4>
+                    Testing Data
+                </h4>
+
+                <p>
+                    3,576 job advertisements were kept for
+                    evaluating the trained model.
+                </p>
+
+            </div>
+
+
+            <div class="dataset-info-card">
+
+                <h4>
+                    Text Features
+                </h4>
+
+                <p>
+                    The model uses job-related textual information
+                    and converts it into TF-IDF numerical features.
+                </p>
+
+            </div>
+
+
+            <div class="dataset-info-card">
+
+                <h4>
+                    Classification
+                </h4>
+
+                <p>
+                    The model distinguishes between legitimate
+                    and fraudulent job advertisements.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PERFORMANCE
+     ===================================================== -->
+
+<section class="section performance-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                Current Model Performance
+            </div>
+
+            <h2>
+                Model Evaluation Results
+            </h2>
+
+            <p>
+                These values represent the current evaluation results
+                of the trained Logistic Regression model on the testing
+                data.
+            </p>
+
+        </div>
+
+
+        <div class="performance-grid">
+
+
+            <div class="performance-card">
+
+                <div class="performance-number">
+                    98.77%
+                </div>
+
+                <div class="performance-label">
+                    Overall Accuracy
+                </div>
+
+            </div>
+
+
+            <div class="performance-card">
+
+                <div class="performance-number">
+                    89.57%
+                </div>
+
+                <div class="performance-label">
+                    Fake-Job Precision
+                </div>
+
+            </div>
+
+
+            <div class="performance-card">
+
+                <div class="performance-number">
+                    84.39%
+                </div>
+
+                <div class="performance-label">
+                    Fake-Job Recall
+                </div>
+
+            </div>
+
+
+            <div class="performance-card">
+
+                <div class="performance-number">
+                    86.90%
+                </div>
+
+                <div class="performance-label">
+                    Fake-Job F1 Score
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- THRESHOLD -->
+
+        <div class="threshold-box">
+
+            <div class="threshold-header">
+
+                <h3>
+                    Selected Fraud Probability Threshold
+                </h3>
+
+                <div class="threshold-value">
+                    70%
+                </div>
+
+            </div>
+
+
+            <div class="threshold-track">
+
+                <div class="threshold-progress"></div>
+
+            </div>
+
+
+            <p class="threshold-description">
+                During model evaluation, multiple probability
+                thresholds were tested. The current JobShield model
+                uses a 70% threshold for its fraud classification
+                decision.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HYBRID ANALYSIS
+     ===================================================== -->
+
+<section class="section hybrid-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                Hybrid Verification
+            </div>
+
+            <h2>
+                Why JobShield Uses Two Analysis Methods
+            </h2>
+
+            <p>
+                The final JobShield risk assessment combines
+                rule-based indicators with the machine learning
+                prediction.
+            </p>
+
+        </div>
+                        prediction.
+
+            </p>
+
+        </div>
+
+
+        <div class="hybrid-grid">
+
+
+            <div class="hybrid-card">
+
+                <h3>
+                    Risk Score Components
+                </h3>
+
+                <p>
+                    The current hybrid analyzer combines the
+                    rule-based score and ML fraud probability
+                    using the project's defined weighting.
+                </p>
+
+
+                <div class="weight-item">
+
+                    <div class="weight-top">
+
+                        <span class="weight-name">
+                            Rule-Based Analysis
+                        </span>
+
+                        <span class="weight-percent">
+                            60%
+                        </span>
+
+                    </div>
+
+                    <div class="weight-bar">
+                        <div class="weight-rule"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="weight-item">
+
+                    <div class="weight-top">
+
+                        <span class="weight-name">
+                            Machine Learning
+                        </span>
+
+                        <span class="weight-percent">
+                            40%
+                        </span>
+
+                    </div>
+
+                    <div class="weight-bar">
+                        <div class="weight-ml"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="hybrid-card hybrid-result">
+
+                <h3>
+                    Final Verification
+                </h3>
+
+                <p>
+                    JobShield combines the analysis results and
+                    produces a final risk score and status.
+                </p>
+
+
+                <div class="hybrid-result-list">
+
+
+                    <div class="hybrid-result-item">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        <span>
+                            Rule-based risk indicators
+                        </span>
+
+                    </div>
+
+
+                    <div class="hybrid-result-item">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        <span>
+                            ML fraudulent-job probability
+                        </span>
+
+                    </div>
+
+
+                    <div class="hybrid-result-item">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        <span>
+                            Combined hybrid risk score
+                        </span>
+
+                    </div>
+
+
+                    <div class="hybrid-result-item">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        <span>
+                            Risk level and supporting reasons
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     RISK LEVELS
+     ===================================================== -->
+
+<section class="section risk-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                Verification Result
+            </div>
+
+            <h2>
+                Understanding the Risk Score
+            </h2>
+
+            <p>
+                The hybrid risk score ranges from 0 to 100 and is
+                converted into a risk category.
+            </p>
+
+        </div>
+
+
+        <div class="risk-grid">
+
+
+            <div class="risk-card risk-low">
+
+                <div class="risk-indicator">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+
+                <h3>
+                    Low Risk
+                </h3>
+
+                <div class="risk-range">
+                    0 – 29
+                </div>
+
+                <p>
+                    The available indicators produce a relatively
+                    low risk score and the advertisement is classified
+                    as likely genuine.
+                </p>
+
+            </div>
+
+
+            <div class="risk-card risk-medium">
+
+                <div class="risk-indicator">
+                    <i class="bi bi-exclamation-circle"></i>
+                </div>
+
+                <h3>
+                    Suspicious
+                </h3>
+
+                <div class="risk-range">
+                    30 – 59
+                </div>
+
+                <p>
+                    The advertisement contains indicators that require
+                    additional verification before proceeding.
+                </p>
+
+            </div>
+
+
+            <div class="risk-card risk-high">
+
+                <div class="risk-indicator">
+                    <i class="bi bi-shield-exclamation"></i>
+                </div>
+
+                <h3>
+                    High Risk
+                </h3>
+
+                <div class="risk-range">
+                    60 – 100
+                </div>
+
+                <p>
+                    Multiple risk indicators and/or a strong ML
+                    fraudulent pattern contribute to a high risk score.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROTECTION
+     ===================================================== -->
+
+<section class="section protection-section" id="protection">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                Stay Protected
+            </div>
+
+            <h2>
+                What JobShield Checks
+            </h2>
+
+            <p>
+                The system examines several commonly observed
+                indicators associated with suspicious recruitment.
+            </p>
+
+        </div>
+
+
+        <div class="protection-grid">
+
+
+            <div class="protection-card">
+
+                <div class="protection-icon">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+
+                <h3>
+                    Payment Requests
+                </h3>
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="main-footer">
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+
+            <div class="footer-brand">
+
+                <div class="footer-brand-row">
+
+                    <div class="footer-logo">
+
+                        <img
+                            src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                            alt="JobShield Logo"
+                        >
+
+                    </div>
+
+
+                    <div class="footer-brand-name">
+                        Job<span>Shield</span>
+                    </div>
+
+                </div>
+
+
+                <p>
+                    A fake job detection and verification system
+                    designed to help users identify potentially
+                    suspicious recruitment opportunities through
+                    automated analysis.
+                </p>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>
+                    PLATFORM
+                </h4>
+
+                <a href="/">
+                    Home
+                </a>
+
+                <a href="/verify-job">
+                    Verify Job
+                </a>
+
+                <a href="/login">
+                    Login
+                </a>
+
+                <a href="/register">
+                    Register
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>
+                    ANALYSIS
+                </h4>
+
+                <a href="#how-it-works">
+                    How It Works
+                </a>
+
+                <a href="#protection">
+                    Protection
+                </a>
+
+                <a href="#how-it-works">
+                    ML Workflow
+                </a>
+
+                <a href="#protection">
+                    Risk Indicators
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>
+                    SYSTEM
+                </h4>
+
+                <a href="#how-it-works">
+                    Verification
+                </a>
+
+                <a href="#how-it-works">
+                    ML Model
+                </a>
+
+                <a href="#protection">
+                    Security Checks
+                </a>
+
+                <a href="#how-it-works">
+                    Risk Analysis
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <div>
+                © 2026 JobShield. All rights reserved.
+            </div>
+
+            <div class="footer-bottom-links">
+
+                <span>
+                    Fake Job Detection
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Job Verification
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+<script>
+let currentCompanySlide = 0;
+
+const companySlides = document.querySelectorAll(".company-slide");
+const companyDots = document.querySelectorAll(".slide-dot");
+
+function showCompanySlide(index) {
+
+    companySlides.forEach(function(slide) {
+        slide.classList.remove("active");
+    });
+
+    companyDots.forEach(function(dot) {
+        dot.classList.remove("active");
+    });
+
+    currentCompanySlide = index;
+
+    companySlides[currentCompanySlide].classList.add("active");
+    companyDots[currentCompanySlide].classList.add("active");
+}
+
+
+function changeCompanySlide(direction) {
+
+    currentCompanySlide += direction;
+
+    if (currentCompanySlide >= companySlides.length) {
+        currentCompanySlide = 0;
+    }
+
+    if (currentCompanySlide < 0) {
+        currentCompanySlide = companySlides.length - 1;
+    }
+
+    showCompanySlide(currentCompanySlide);
+}
+
+
+/* AUTOMATIC SLIDESHOW */
+setInterval(function() {
+    changeCompanySlide(1);
+}, 4000);
+
+
+/* INITIAL SLIDE */
+showCompanySlide(0);
+</script>
+
+</body>
+
+</html>
+
+

@@ -1,0 +1,588 @@
+{% extends "base.html" %}
+
+{% block title %}Verification History - JobShield{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/verification_history.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="history-page">
+
+    <!-- ==================== NAVBAR ==================== -->
+
+    <nav class="history-navbar">
+
+        <div class="history-navbar-inner">
+
+            <!-- LOGO / BRAND -->
+            <a href="{{ url_for('dashboard') }}" class="history-brand">
+
+                <div class="history-logo-wrap">
+                    <img
+                        src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                        alt="JobShield"
+                        class="history-logo"
+                    >
+                </div>
+
+                <div class="history-brand-info">
+
+                    <div class="history-brand-name">
+                        Job<span>Shield</span>
+                    </div>
+
+                    <div class="history-tagline">
+                        SAFE JOBS. BRIGHTER FUTURES.
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- NAVIGATION -->
+
+            <div class="history-nav">
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="history-nav-item"
+                >
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('verify_job') }}"
+                    class="history-nav-item"
+                >
+                    <i class="bi bi-shield-check"></i>
+                    <span>Verify Job</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('verification_history') }}"
+                    class="history-nav-item active"
+                >
+                    <i class="bi bi-clock-history"></i>
+                    <span>History</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('report_job') }}"
+                    class="history-nav-item"
+                >
+                    <i class="bi bi-flag-fill"></i>
+                    <span>Report</span>
+                </a>
+
+            </div>
+
+
+            <!-- USER PROFILE -->
+
+            <div class="history-profile-area">
+
+                <div class="history-profile">
+
+                    <div class="history-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="history-profile-text">
+
+                        <span class="history-profile-label">
+                            SIGNED IN AS
+                        </span>
+
+                        <span class="history-user-name">
+                            {{ session.get('user_name', 'User') }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="history-logout"
+                >
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Logout</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ==================== MAIN ==================== -->
+
+    <main class="history-main">
+
+
+        <!-- PAGE HEADER -->
+
+        <section class="history-page-header">
+
+            <div class="history-eyebrow">
+                <i class="bi bi-clock-history"></i>
+                ACTIVITY
+            </div>
+
+            <h1>
+                Verification History
+            </h1>
+
+            <p>
+                Review the jobs you have previously checked with JobShield.
+            </p>
+
+        </section>
+
+
+        <!-- ==================== HISTORY CARD ==================== -->
+
+        <section class="history-card">
+
+
+            <!-- CARD HEADER -->
+
+            <div class="history-card-header">
+
+                <div class="history-card-heading">
+
+                    <div class="history-card-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Your Verification Records
+                        </h2>
+
+                        <p>
+                            Previous job verification results are stored here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if jobs %}
+
+                <div class="history-count">
+
+                    <strong>
+                        {{ jobs|length }}
+                    </strong>
+
+                    <span>
+                        verification{% if jobs|length != 1 %}s{% endif %}
+                    </span>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- ==================== RECORDS ==================== -->
+
+            {% if jobs %}
+
+            <div class="history-records">
+
+
+                {% for item in jobs %}
+
+                <article class="history-record">
+
+
+                    <!-- RECORD HEADER -->
+
+                    <div class="history-record-top">
+
+
+                        <div class="history-company">
+
+                            <div class="history-company-icon">
+                                <i class="bi bi-building"></i>
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    {{ item.company_name or 'Unknown Company' }}
+                                </h3>
+
+                                <span>
+                                    {{ item.job_title or 'Job Opportunity' }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- STATUS -->
+
+                        <div class="history-status">
+
+                            {% if item.status and 'Genuine' in item.status %}
+
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span class="status-genuine">
+                                    {{ item.status }}
+                                </span>
+
+                            {% elif item.risk_level == 'High Risk' %}
+
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span class="status-danger">
+                                    {{ item.status or 'High Risk' }}
+                                </span>
+
+                            {% elif item.risk_level == 'Suspicious' %}
+
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span class="status-warning">
+                                    {{ item.status or 'Suspicious' }}
+                                </span>
+
+                            {% else %}
+
+                                <i class="bi bi-shield-check"></i>
+                                <span class="status-neutral">
+                                    {{ item.status or 'Not Available' }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================== DETAILS ==================== -->
+
+                    <div class="history-details">
+
+
+                        <!-- RECRUITER -->
+
+                        <div class="history-detail">
+
+                            <div class="history-detail-icon">
+                                <i class="bi bi-person-badge"></i>
+                            </div>
+
+                            <div class="history-detail-content">
+
+                                <span>
+                                    RECRUITER
+                                </span>
+
+                                <strong>
+                                    {{ item.recruiter_name or 'Not provided' }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SALARY -->
+
+                        <div class="history-detail">
+
+                            <div class="history-detail-icon">
+                                <i class="bi bi-currency-rupee"></i>
+                            </div>
+
+                            <div class="history-detail-content">
+
+                                <span>
+                                    SALARY
+                                </span>
+
+                                <strong>
+                                    {{ item.salary or 'Not provided' }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DATE -->
+
+                        <div class="history-detail">
+
+                            <div class="history-detail-icon">
+                                <i class="bi bi-calendar3"></i>
+                            </div>
+
+                            <div class="history-detail-content">
+
+                                <span>
+                                    VERIFIED ON
+                                </span>
+
+                                <strong>
+                                    {{ item.verified_at or item.created_at or 'Not available' }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SCORE -->
+
+                        <div class="history-detail">
+
+                            <div class="history-detail-icon">
+                                <i class="bi bi-bar-chart-fill"></i>
+                            </div>
+
+                            <div class="history-detail-content">
+
+                                <span>
+                                    RISK SCORE
+                                </span>
+
+                                <strong class="risk-score-text">
+                                    {{ item.risk_score or 0 }}/100
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================== RISK ==================== -->
+
+                    <div class="history-risk-section">
+
+                        <div class="history-risk-header">
+
+                            <span>
+                                Risk Indicator
+                            </span>
+
+                            <strong>
+                                {{ item.risk_level or 'Unknown' }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="history-risk-bar">
+
+
+                            {% if item.risk_score and item.risk_score >= 60 %}
+
+                            <div class="history-risk-fill history-risk-high"></div>
+
+
+                            {% elif item.risk_score and item.risk_score >= 30 %}
+
+                            <div class="history-risk-fill history-risk-medium"></div>
+
+
+                            {% else %}
+
+                            <div class="history-risk-fill history-risk-low"></div>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================== BOTTOM ==================== -->
+
+                    <div class="history-record-bottom">
+
+
+                        <!-- JOB URL -->
+
+                        <div class="history-url">
+
+                            {% if item.job_url %}
+
+                            <i class="bi bi-link-45deg"></i>
+
+                            <a
+                                href="{{ item.job_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                View Job URL
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+
+                            {% else %}
+
+                            <span class="history-no-url">
+                                <i class="bi bi-link-45deg"></i>
+                                No job URL provided
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- JOB ID -->
+
+                        <div class="history-record-id">
+
+                            <i class="bi bi-hash"></i>
+
+                            Job ID:
+                            <strong>
+                                {{ item.id }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================== ANALYSIS ==================== -->
+
+                    {% if item.reasons %}
+
+                    <div class="history-reasons">
+
+                        <div class="history-reasons-title">
+
+                            <i class="bi bi-info-circle"></i>
+
+                            Analysis Summary
+
+                        </div>
+
+                        <div class="history-reasons-text">
+                            {{ item.reasons }}
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                </article>
+
+                {% endfor %}
+
+
+            </div>
+
+
+            <!-- ==================== EMPTY ==================== -->
+
+            {% else %}
+
+            <div class="history-empty">
+
+                <div class="history-empty-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+
+                <h3>
+                    No Verification History
+                </h3>
+
+                <p>
+                    You have not verified any jobs yet.
+                    Start by checking a job opportunity.
+                </p>
+
+                <a
+                    href="{{ url_for('verify_job') }}"
+                    class="history-empty-btn"
+                >
+                    <i class="bi bi-shield-check"></i>
+                    Verify a Job
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ==================== CTA ==================== -->
+
+        <section class="history-bottom-cta">
+
+            <div class="history-bottom-icon">
+                <i class="bi bi-shield-fill-check"></i>
+            </div>
+
+            <div class="history-bottom-content">
+
+                <span>
+                    JOBSHIELD
+                </span>
+
+                <h2>
+                    Need to check another opportunity?
+                </h2>
+
+                <p>
+                    Submit a new job and review its risk indicators.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('verify_job') }}"
+                class="history-bottom-btn"
+            >
+                Verify New Job
+                <i class="bi bi-arrow-right"></i>
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================== FOOTER ==================== -->
+
+    <footer class="history-footer">
+
+        <div class="history-footer-inner">
+
+            JobShield
+            <span>•</span>
+            Safer job verification
+
+        </div>
+
+    </footer>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - JobShield{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6 col-lg-5">
+
+            <!-- Admin Login Card -->
+
+            <div class="card border-0 shadow-lg">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Icon -->
+
+                    <div class="text-center mb-4">
+
+                        <div class="bg-dark rounded-circle
+                                    d-inline-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:75px;height:75px;">
+
+                            <i class="bi bi-shield-lock-fill
+                                      text-white fs-2"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Heading -->
+
+                    <div class="text-center mb-4">
+
+                        <h2 class="fw-bold mb-2">
+                            Admin Login
+                        </h2>
+
+                        <p class="text-muted mb-0">
+                            Sign in to the JobShield administration panel.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Flash Messages -->
+
+                    {% with messages = get_flashed_messages(
+                        with_categories=true
+                    ) %}
+
+                        {% if messages %}
+
+                            {% for category, message in messages %}
+
+                                <div class="alert alert-{{ category }}
+                                            alert-dismissible fade show"
+                                     role="alert">
+
+                                    {{ message }}
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="alert">
+                                    </button>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    <!-- Login Form -->
+
+                    <form method="POST"
+                          action="{{ url_for('admin_login') }}">
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            <label for="email"
+                                   class="form-label fw-semibold">
+
+                                Admin Email
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       name="email"
+                                       placeholder="Enter admin email"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Password -->
+
+                        <div class="mb-4">
+
+                            <label for="password"
+                                   class="form-label fw-semibold">
+
+                                Password
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+
+                                <input type="password"
+                                       class="form-control"
+                                       id="password"
+                                       name="password"
+                                       placeholder="Enter admin password"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Login Button -->
+
+                        <button type="submit"
+                                class="btn btn-dark w-100 py-2">
+
+                            <i class="bi bi-shield-lock me-2"></i>
+
+                            Login as Administrator
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- Security Notice -->
+
+                    <div class="alert alert-light border mt-4 mb-0">
+
+                        <div class="d-flex">
+
+                            <i class="bi bi-info-circle-fill
+                                      text-dark me-2 mt-1"></i>
+
+                            <small class="text-muted">
+
+                                Administrator access is restricted to
+                                accounts with the <strong>admin</strong>
+                                role.
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Back -->
+
+                    <div class="text-center mt-4">
+
+                        <a href="{{ url_for('login') }}"
+                           class="text-decoration-none">
+
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Back to User Login
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

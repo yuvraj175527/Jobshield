@@ -1,0 +1,823 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Job - JobShield{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/verify_job.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="verify-page">
+
+    <!-- NAVBAR -->
+    <nav class="verify-navbar">
+        <div class="verify-navbar-inner">
+
+            <!-- BRAND -->
+            <a href="{{ url_for('dashboard') }}" class="verify-brand">
+
+                <div class="verify-logo-wrap">
+                    <img
+                        src="{{ url_for('static', filename='images/jobshieldlogo.png') }}"
+                        alt="JobShield"
+                        class="verify-logo"
+                    >
+                </div>
+
+                <div class="verify-brand-info">
+                    <div class="verify-brand-name">
+                        Job<span>Shield</span>
+                    </div>
+
+                    <div class="verify-tagline">
+                        SAFE JOBS. BRIGHTER FUTURES.
+                    </div>
+                </div>
+
+            </a>
+
+            <!-- NAVIGATION -->
+            <div class="verify-nav">
+
+                <a href="{{ url_for('dashboard') }}" class="verify-nav-item">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{{ url_for('verify_job') }}"
+                   class="verify-nav-item active">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Verify Job</span>
+                </a>
+
+                <a href="{{ url_for('verification_history') }}"
+                   class="verify-nav-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>History</span>
+                </a>
+
+                <a href="{{ url_for('report_job') }}"
+                   class="verify-nav-item">
+                    <i class="bi bi-flag-fill"></i>
+                    <span>Report</span>
+                </a>
+
+            </div>
+
+            <!-- PROFILE -->
+            <div class="verify-profile-area">
+
+                <div class="verify-profile">
+
+                    <div class="verify-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="verify-profile-text">
+                        <span class="verify-profile-label">
+                            SIGNED IN AS
+                        </span>
+
+                        <span class="verify-user-name">
+                            {{ session.get('user_name', 'User') }}
+                        </span>
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('logout') }}" class="verify-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Logout</span>
+                </a>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="verify-main">
+
+        <!-- HEADER -->
+        <section class="verify-page-header">
+
+            <div class="verify-eyebrow">
+                <i class="bi bi-shield-check"></i>
+                JOB VERIFICATION
+            </div>
+
+            <h1>Verify a Job</h1>
+
+            <p>
+                Check a job opportunity for potential scam indicators
+                and suspicious recruitment patterns.
+            </p>
+
+        </section>
+
+        <!-- TWO COLUMN CONTENT -->
+        <div class="verify-layout">
+
+            <!-- LEFT CARD -->
+            <section class="verify-card">
+
+                <div class="verify-card-header">
+
+                    <div class="verify-card-heading">
+
+                        <div class="verify-card-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+
+                        <div>
+                            <h2>Job Information</h2>
+                            <p>
+                                Enter the details of the opportunity you want to analyze.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="verify-secure">
+                        <i class="bi bi-lock-fill"></i>
+                        Secure Analysis
+                    </div>
+
+                </div>
+
+                <!-- FORM -->
+                <form
+                    method="POST"
+                    action="{{ url_for('verify_job') }}"
+                    class="verify-form"
+                    id="verifyJobForm"
+                >
+
+                    <div class="verify-section-title">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Opportunity Details
+                    </div>
+
+                    <div class="verify-form-grid">
+
+                        <!-- COMPANY -->
+                        <div class="verify-field">
+
+                            <label for="company_name">
+                                <i class="bi bi-building"></i>
+                                Company Name
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="verify-input-wrap">
+                                <i class="bi bi-building verify-field-icon"></i>
+
+                                <input
+                                    type="text"
+                                    id="company_name"
+                                    name="company_name"
+                                    class="verify-input"
+                                    placeholder="Enter company name"
+                                    required
+                                >
+                            </div>
+
+                        </div>
+
+                        <!-- JOB TITLE -->
+                        <div class="verify-field">
+
+                            <label for="job_title">
+                                <i class="bi bi-briefcase-fill"></i>
+                                Job Title
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="verify-input-wrap">
+                                <i class="bi bi-briefcase verify-field-icon"></i>
+
+                                <input
+                                    type="text"
+                                    id="job_title"
+                                    name="job_title"
+                                    class="verify-input"
+                                    placeholder="e.g. Software Engineer"
+                                    required
+                                >
+                            </div>
+
+                        </div>
+
+                        <!-- RECRUITER -->
+                        <div class="verify-field">
+
+                            <label for="recruiter_name">
+                                <i class="bi bi-person-badge"></i>
+                                Recruiter Name
+                            </label>
+
+                            <div class="verify-input-wrap">
+                                <i class="bi bi-person verify-field-icon"></i>
+
+                                <input
+                                    type="text"
+                                    id="recruiter_name"
+                                    name="recruiter_name"
+                                    class="verify-input"
+                                    placeholder="Enter recruiter name"
+                                >
+                            </div>
+
+                        </div>
+
+                        <!-- SALARY -->
+                        <div class="verify-field">
+
+                            <label for="salary">
+                                <i class="bi bi-currency-rupee"></i>
+                                Salary
+                            </label>
+
+                            <div class="verify-input-wrap">
+                                <i class="bi bi-currency-rupee verify-field-icon"></i>
+
+                                <input
+                                    type="text"
+                                    id="salary"
+                                    name="salary"
+                                    class="verify-input"
+                                    placeholder="e.g. ₹8,00,000 – ₹12,00,000"
+                                >
+                            </div>
+
+                        </div>
+
+                        <!-- OPTIONAL JOB URL -->
+                        <div class="verify-field full">
+
+                            <label for="job_url">
+                                <i class="bi bi-link-45deg"></i>
+                                Job URL
+                                <span class="optional-label">(Optional)</span>
+                            </label>
+
+                            <div class="verify-input-wrap">
+                                <i class="bi bi-link-45deg verify-field-icon"></i>
+
+                                <input
+                                    type="url"
+                                    id="job_url"
+                                    name="job_url"
+                                    class="verify-input"
+                                    placeholder="https://company.com/job"
+                                >
+                            </div>
+
+                            <div class="verify-help">
+                                You can provide the original job posting URL
+                                if available. If you leave this field blank,
+                                JobShield will analyze the submitted job details
+                                using the available risk checks and machine
+                                learning model.
+                            </div>
+
+                        </div>
+
+                        <!-- DESCRIPTION -->
+                        <div class="verify-field full">
+
+                            <label for="description">
+                                <i class="bi bi-card-text"></i>
+                                Job Description
+                                <span class="required">*</span>
+                            </label>
+
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="verify-textarea"
+                                placeholder="Paste the complete job description here..."
+                                required
+                            ></textarea>
+
+                            <div class="verify-help">
+                                Include the complete job description for
+                                a more detailed analysis.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <div class="verify-submit">
+
+                        <div class="verify-submit-info">
+                            <i class="bi bi-shield-check"></i>
+
+                            <span>
+                                Your information will be analyzed for risk indicators.
+                            </span>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="verify-submit-btn"
+                            id="verifySubmitButton"
+                        >
+                            <i class="bi bi-search"></i>
+                            Verify Job
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+            <!-- RIGHT SIDEBAR -->
+            <aside class="verify-sidebar">
+
+                <!-- ANALYSIS CARD -->
+                <div class="verify-side-card">
+
+                    <div class="verify-side-heading">
+
+                        <div class="verify-side-icon">
+                            <i class="bi bi-bar-chart-line"></i>
+                        </div>
+
+                        <div>
+                            <h3>Risk Analysis</h3>
+                            <span>How your job is evaluated</span>
+                        </div>
+
+                    </div>
+
+                    <p>
+                        A risk score and classification are generated
+                        from the submitted information.
+                    </p>
+
+                </div>
+
+                <!-- WHAT WE CHECK -->
+                <div class="verify-side-card">
+
+                    <div class="verify-side-heading">
+
+                        <div class="verify-side-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+
+                        <div>
+                            <h3>What We Check</h3>
+                            <span>Important risk indicators</span>
+                        </div>
+
+                    </div>
+
+                    <div class="verify-check-list">
+
+                        <div class="verify-check">
+
+                            <div class="check-icon">
+                                <i class="bi bi-currency-rupee"></i>
+                            </div>
+
+                            <div>
+                                <strong>Payment Requests</strong>
+                                <span>
+                                    Suspicious fee or payment indicators.
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="verify-check">
+
+                            <div class="check-icon">
+                                <i class="bi bi-person-lock"></i>
+                            </div>
+
+                            <div>
+                                <strong>Sensitive Information</strong>
+                                <span>
+                                    Requests for personal or financial details.
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="verify-check">
+
+                            <div class="check-icon">
+                                <i class="bi bi-chat-dots"></i>
+                            </div>
+
+                            <div>
+                                <strong>Recruitment Patterns</strong>
+                                <span>
+                                    Potentially suspicious communication patterns.
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="verify-check">
+
+                            <div class="check-icon">
+                                <i class="bi bi-bar-chart"></i>
+                            </div>
+
+                            <div>
+                                <strong>Risk Indicators</strong>
+                                <span>
+                                    Multiple indicators are combined into a result.
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- HISTORY -->
+                <div class="verify-side-card">
+
+                    <div class="verify-side-heading">
+
+                        <div class="verify-side-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+
+                        <div>
+                            <h3>Saved History</h3>
+                            <span>Your previous verification records</span>
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Your verification results remain available
+                        in your verification history.
+                    </p>
+
+                    <a
+                        href="{{ url_for('verification_history') }}"
+                        class="verify-history-btn"
+                    >
+                        <i class="bi bi-clock-history"></i>
+                        View History
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="verify-footer">
+        <span>
+            JobShield &nbsp;•&nbsp; Safer job verification
+        </span>
+    </footer>
+
+</div>
+
+<!-- VERIFICATION LOADING OVERLAY -->
+<div id="verificationLoading" class="verification-loading-overlay">
+
+    <div class="verification-loading-window">
+
+        <!-- ANIMATED SHIELD -->
+        <div class="loading-shield">
+
+            <div class="shield-ring ring-one"></div>
+            <div class="shield-ring ring-two"></div>
+
+            <div class="shield-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+
+        </div>
+
+        <div class="loading-title">
+            Verifying Job
+        </div>
+
+        <div class="loading-subtitle">
+            JobShield is analyzing this opportunity
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="loading-progress">
+            <div
+                id="verificationProgress"
+                class="loading-progress-fill"
+            ></div>
+        </div>
+
+        <div
+            id="verificationPercentage"
+            class="loading-percentage"
+        >
+            0%
+        </div>
+
+        <div
+            id="verificationStatus"
+            class="loading-status"
+        >
+            Preparing verification...
+        </div>
+
+        <!-- PROCESS STEPS -->
+        <div class="loading-process-list">
+
+            <div
+                id="processStep1"
+                class="loading-process-step active"
+            >
+                <div class="process-icon">
+                    <i class="bi bi-circle"></i>
+                </div>
+                <span>Collecting job information</span>
+            </div>
+
+            <div
+                id="processStep2"
+                class="loading-process-step"
+            >
+                <div class="process-icon">
+                    <i class="bi bi-circle"></i>
+                </div>
+                <span>Checking risk indicators</span>
+            </div>
+
+            <div
+                id="processStep3"
+                class="loading-process-step"
+            >
+                <div class="process-icon">
+                    <i class="bi bi-circle"></i>
+                </div>
+                <span>Analyzing job description</span>
+            </div>
+
+            <div
+                id="processStep4"
+                class="loading-process-step"
+            >
+                <div class="process-icon">
+                    <i class="bi bi-circle"></i>
+                </div>
+                <span>Running machine learning model</span>
+            </div>
+
+            <div
+                id="processStep5"
+                class="loading-process-step"
+            >
+                <div class="process-icon">
+                    <i class="bi bi-circle"></i>
+                </div>
+                <span>Calculating hybrid risk score</span>
+            </div>
+
+            <div
+                id="processStep6"
+                class="loading-process-step"
+            >
+                <div class="process-icon">
+                    <i class="bi bi-circle"></i>
+                </div>
+                <span>Preparing verification result</span>
+            </div>
+
+        </div>
+
+        <div class="loading-security">
+            <i class="bi bi-lock-fill"></i>
+            Secure automated analysis
+        </div>
+
+    </div>
+
+</div>
+
+<!-- LOADING ANIMATION SCRIPT -->
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("verifyJobForm");
+
+    const overlay = document.getElementById("verificationLoading");
+
+    const progress = document.getElementById("verificationProgress");
+
+    const percentage = document.getElementById("verificationPercentage");
+
+    const status = document.getElementById("verificationStatus");
+
+    const submitButton = document.getElementById("verifySubmitButton");
+
+    if (!form || !overlay) {
+        return;
+    }
+
+    const steps = [
+
+        {
+            id: "processStep1",
+            text: "Collecting submitted job information..."
+        },
+
+        {
+            id: "processStep2",
+            text: "Checking recruitment risk indicators..."
+        },
+
+        {
+            id: "processStep3",
+            text: "Analyzing job description..."
+        },
+
+        {
+            id: "processStep4",
+            text: "Running machine learning model..."
+        },
+
+        {
+            id: "processStep5",
+            text: "Calculating hybrid risk score..."
+        },
+
+        {
+            id: "processStep6",
+            text: "Preparing verification result..."
+        }
+
+    ];
+
+    form.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+        // Validate required fields.
+        // Job URL is intentionally optional.
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // Show loading overlay.
+        overlay.classList.add("show");
+
+        document.body.classList.add(
+            "verification-processing"
+        );
+
+        // Disable submit button.
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        // Reset progress.
+        progress.style.width = "5%";
+
+        percentage.textContent = "5%";
+
+        status.textContent =
+            "Starting secure verification...";
+
+        // Reset process steps.
+        steps.forEach(function (step) {
+
+            const element = document.getElementById(step.id);
+
+            if (!element) {
+                return;
+            }
+
+            element.classList.remove(
+                "active",
+                "completed"
+            );
+
+            const icon = element.querySelector(".process-icon i");
+
+            if (icon) {
+                icon.className = "bi bi-circle";
+            }
+
+        });
+
+        // Animation function.
+        function showStep(index) {
+
+            if (index >= steps.length) {
+
+                progress.style.width = "100%";
+
+                percentage.textContent = "100%";
+
+                status.textContent =
+                    "Verification complete. Loading result...";
+
+                setTimeout(function () {
+
+                    // Submit to the existing Flask route.
+                    form.submit();
+
+                }, 700);
+
+                return;
+            }
+
+            // Mark previous steps completed.
+            for (let i = 0; i < index; i++) {
+
+                const previous = document.getElementById(
+                    steps[i].id
+                );
+
+                if (!previous) {
+                    continue;
+                }
+
+                previous.classList.remove("active");
+
+                previous.classList.add("completed");
+
+                const previousIcon = previous.querySelector(
+                    ".process-icon i"
+                );
+
+                if (previousIcon) {
+                    previousIcon.className =
+                        "bi bi-check-circle-fill";
+                }
+
+            }
+
+            // Current step.
+            const current = document.getElementById(
+                steps[index].id
+            );
+
+            if (current) {
+
+                current.classList.add("active");
+
+                current.classList.remove("completed");
+
+                const currentIcon = current.querySelector(
+                    ".process-icon i"
+                );
+
+                if (currentIcon) {
+                    currentIcon.className =
+                        "bi bi-arrow-repeat";
+                }
+
+            }
+
+            // Update status.
+            status.textContent = steps[index].text;
+
+            // Update progress.
+            const progressValue = Math.min(
+                95,
+                8 + (index * 17)
+            );
+
+            progress.style.width =
+                progressValue + "%";
+
+            percentage.textContent =
+                progressValue + "%";
+
+            // Continue animation.
+            setTimeout(function () {
+                showStep(index + 1);
+            }, 900);
+
+        }
+
+        // Start animation.
+        showStep(0);
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

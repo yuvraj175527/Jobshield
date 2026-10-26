@@ -1,0 +1,35 @@
+JOBSHIELD ML MODEL EVALUATION
+==============================
+
+Model: TF-IDF + Logistic Regression
+Dataset records: 17880
+Training samples: 14304
+Testing samples: 3576
+Selected threshold: 0.70
+
+Accuracy: 0.9877
+Precision: 0.8957
+Recall: 0.8439
+F1 Score: 0.8690
+
+Threshold Comparison:
+
+Threshold: 0.50 | Accuracy: 0.9754 | Precision: 0.6856 | Recall: 0.9075 | F1: 0.7811
+Threshold: 0.55 | Accuracy: 0.9813 | Precision: 0.7573 | Recall: 0.9017 | F1: 0.8232
+Threshold: 0.60 | Accuracy: 0.9846 | Precision: 0.8138 | Recall: 0.8844 | F1: 0.8476
+Threshold: 0.65 | Accuracy: 0.9855 | Precision: 0.8538 | Recall: 0.8439 | F1: 0.8488
+Threshold: 0.70 | Accuracy: 0.9877 | Precision: 0.8957 | Recall: 0.8439 | F1: 0.8690
+
+Classification Report:
+              precision    recall  f1-score   support
+
+     Genuine       0.99      1.00      0.99      3403
+        Fake       0.90      0.84      0.87       173
+
+    accuracy                           0.99      3576
+   macro avg       0.94      0.92      0.93      3576
+weighted avg       0.99      0.99      0.99      3576
+
+Confusion Matrix:
+[[3386   17]
+ [  27  146]]
