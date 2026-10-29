@@ -30,7 +30,7 @@ JobShield is a web-based application designed to help users identify potentially
 
 1. Clone the repository:
    ```bash
-   git clone YOUR_GITHUB_REPOSITORY_URL
+   git clone https://github.com/yuvraj175527/Jobshield
    ```
 2. Open the project folder:
    ```bash
